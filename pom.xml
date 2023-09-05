@@ -8,6 +8,12 @@
     <name>backend-newgo-02 Maven Webapp</name>
     <url>https://maven.apache.org</url>
     <dependencies>
+        <dependency>
+            <groupId>javax.servlet</groupId>
+            <artifactId>javax.servlet-api</artifactId>
+            <version>3.1.0</version>
+            <scope>provided</scope>
+        </dependency>
     </dependencies>
     <build>
         <finalName>backend-newgo-02</finalName>
