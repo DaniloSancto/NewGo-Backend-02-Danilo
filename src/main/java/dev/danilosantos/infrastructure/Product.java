@@ -14,12 +14,12 @@ public class Product {
     private Double minStorage;
     private Date dtCreate;
     private Date dtUpdate;
+    private Boolean active;
 
     public Product() {
     }
 
-    public Product(Long id, UUID hash, String name, String description, String ean13, Double price, Double quantity, Double minStorage, Date dtCreate, Date dtUpdate) {
-        this.id = id;
+    public Product(UUID hash, String name, String description, String ean13, Double price, Double quantity, Double minStorage, Date dtCreate, Date dtUpdate, Boolean active) {
         this.hash = hash;
         this.name = name;
         this.description = description;
@@ -29,6 +29,7 @@ public class Product {
         this.minStorage = minStorage;
         this.dtCreate = dtCreate;
         this.dtUpdate = dtUpdate;
+        this.active = active;
     }
 
     public Long getId() {
@@ -109,5 +110,13 @@ public class Product {
 
     public void setDtUpdate(Date dtUpdate) {
         this.dtUpdate = dtUpdate;
+    }
+
+    public Boolean getActive() {
+        return active;
+    }
+
+    public void setActive(Boolean active) {
+        this.active = active;
     }
 }
