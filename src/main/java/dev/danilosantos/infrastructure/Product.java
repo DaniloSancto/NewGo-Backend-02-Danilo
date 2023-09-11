@@ -96,9 +96,7 @@ public class Product {
         this.minStorage = minStorage;
     }
 
-    public Date getDtCreate() {
-        return dtCreate;
-    }
+    public Date getDtCreate() { return dtCreate; }
 
     public void setDtCreate(Date dtCreate) {
         this.dtCreate = dtCreate;
@@ -118,5 +116,22 @@ public class Product {
 
     public void setActive(Boolean active) {
         this.active = active;
+    }
+
+    @Override
+    public String toString() {
+        return "Product{" +
+                "id=" + id +
+                ", hash=" + hash +
+                ", name='" + name + '\'' +
+                ", description='" + description + '\'' +
+                ", ean13='" + ean13 + '\'' +
+                ", price=" + price +
+                ", quantity=" + quantity +
+                ", minStorage=" + minStorage +
+                ", dtCreate=" + dtCreate +
+                ", dtUpdate=" + dtUpdate +
+                ", active=" + active +
+                '}';
     }
 }
