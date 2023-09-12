@@ -5,6 +5,7 @@ import dev.danilosantos.infrastructure.database.ConnectionFactory;
 
 import java.sql.*;
 import java.util.Date;
+import java.util.UUID;
 
 public class ProductDao {
     private final ConnectionFactory factory = new ConnectionFactory();
@@ -44,6 +45,40 @@ public class ProductDao {
             throw new RuntimeException(ex);
         }
         return product;
+    }
+
+    public Product findByName(String paramName) {
+        String sql = "SELECT * FROM produtos WHERE LOWER(nome) = LOWER(?)";
+        PreparedStatement statement;
+
+        try {
+            statement = connection.prepareStatement(sql);
+            statement.setString(1, paramName);
+            ResultSet rs = statement.executeQuery();
+
+            Product product = null;
+            if (rs.next()) {
+                product = new Product(
+                        rs.getLong("id"),
+                        UUID.fromString(rs.getString("hash")),
+                        rs.getString("nome"),
+                        rs.getString("descricao"),
+                        rs.getString("ean13"),
+                        rs.getDouble("preco"),
+                        rs.getDouble("quantidade"),
+                        rs.getDouble("estoque_min"),
+                        rs.getTimestamp("dtcreate"),
+                        rs.getDate("dtupdate"),
+                        rs.getBoolean("lativo")
+                );
+            }
+            statement.close();
+            rs.close();
+            return product;
+        }
+        catch (SQLException ex) {
+            throw new RuntimeException(ex);
+        }
     }
 
     private Timestamp getTimeStampOrNull(Date date) {
