@@ -19,6 +19,20 @@ public class Product {
     public Product() {
     }
 
+    public Product(Long id, UUID hash, String name, String description, String ean13, Double price, Double quantity, Double minStorage, Date dtCreate, Date dtUpdate, Boolean active) {
+        this.id = id;
+        this.hash = hash;
+        this.name = name;
+        this.description = description;
+        this.ean13 = ean13;
+        this.price = price;
+        this.quantity = quantity;
+        this.minStorage = minStorage;
+        this.dtCreate = dtCreate;
+        this.dtUpdate = dtUpdate;
+        this.active = active;
+    }
+
     public Product(UUID hash, String name, String description, String ean13, Double price, Double quantity, Double minStorage, Date dtCreate, Date dtUpdate, Boolean active) {
         this.hash = hash;
         this.name = name;
@@ -30,6 +44,15 @@ public class Product {
         this.dtCreate = dtCreate;
         this.dtUpdate = dtUpdate;
         this.active = active;
+    }
+
+    public Product(String name, String description, String ean13, Double price, Double quantity, Double minStorage) {
+        this.name = name;
+        this.description = description;
+        this.ean13 = ean13;
+        this.price = price;
+        this.quantity = quantity;
+        this.minStorage = minStorage;
     }
 
     public Long getId() {
