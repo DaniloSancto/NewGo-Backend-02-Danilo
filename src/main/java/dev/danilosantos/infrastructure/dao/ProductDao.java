@@ -4,7 +4,9 @@ import dev.danilosantos.infrastructure.Product;
 import dev.danilosantos.infrastructure.database.ConnectionFactory;
 
 import java.sql.*;
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 import java.util.UUID;
 
 public class ProductDao implements InterfaceProductDao {
@@ -46,6 +48,40 @@ public class ProductDao implements InterfaceProductDao {
             throw new RuntimeException(ex);
         }
         return product;
+    }
+
+    @Override
+    public List<Product> findAll() {
+        String sql = "SELECT * FROM produtos";
+        PreparedStatement statement;
+        try {
+            statement = connection.prepareStatement(sql);
+            ResultSet rs = statement.executeQuery();
+
+            List<Product> list = new ArrayList<>();
+            while (rs.next()) {
+                Product product = new Product(
+                        rs.getLong("id"),
+                        UUID.fromString(rs.getString("hash")),
+                        rs.getString("nome"),
+                        rs.getString("descricao"),
+                        rs.getString("ean13"),
+                        rs.getDouble("preco"),
+                        rs.getDouble("quantidade"),
+                        rs.getDouble("estoque_min"),
+                        rs.getTimestamp("dtcreate"),
+                        rs.getDate("dtupdate"),
+                        rs.getBoolean("lativo")
+                );
+                list.add(product);
+            }
+            statement.close();
+            rs.close();
+            return list;
+        }
+        catch (SQLException ex) {
+            throw new RuntimeException(ex);
+        }
     }
 
     @Override
