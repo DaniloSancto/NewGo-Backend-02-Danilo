@@ -7,6 +7,7 @@ import dev.danilosantos.infrastructure.dao.ProductDao;
 import dev.danilosantos.infrastructure.dto.ProductInsertDto;
 
 import java.util.Date;
+import java.util.List;
 import java.util.UUID;
 
 public class ProductService {
@@ -32,6 +33,10 @@ public class ProductService {
         verifyNullValues(product);
         verifyNegativeValues(product.getPrice(), product.getQuantity(), product.getMinStorage());
         dao.insert(product);
+    }
+
+    public List<Product> findAll() {
+        return dao.findAll();
     }
 
     private void verifyNegativeValues(Double price, Double quantity, Double minStorage) {
