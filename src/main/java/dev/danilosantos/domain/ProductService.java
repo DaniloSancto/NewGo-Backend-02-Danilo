@@ -28,12 +28,13 @@ public class ProductService {
             throw new BaseException("ean13 do produto ja cadastrado");
         }
 
+        verifyNullValues(product);
         verifyNegativeValues(product.getPrice(), product.getQuantity(), product.getMinStorage());
         productDao.insert(product);
     }
 
     private void verifyNegativeValues(Double price, Double quantity, Double minStorage) {
-        if (price< 0) {
+        if (price < 0) {
             throw new BaseException("preco nao pode ser um valor negativo");
         }
         else if (quantity < 0) {
@@ -41,6 +42,18 @@ public class ProductService {
         }
         else if (minStorage < 0) {
             throw new BaseException("estoque_minimo nao pode ser um valor negativo");
+        }
+    }
+
+    private void verifyNullValues(Product product) {
+        if (product.getPrice() == null) {
+            product.setPrice(0.0);
+        }
+        if (product.getQuantity() == null) {
+            product.setQuantity(0.0);
+        }
+        if (product.getMinStorage() == null) {
+            product.setMinStorage(0.0);
         }
     }
 
