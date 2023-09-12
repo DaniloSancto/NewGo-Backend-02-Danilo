@@ -1,5 +1,6 @@
 package dev.danilosantos.domain;
 
+import dev.danilosantos.domain.exception.BaseException;
 import dev.danilosantos.infrastructure.Product;
 import dev.danilosantos.infrastructure.dao.ProductDao;
 import dev.danilosantos.infrastructure.dto.ProductInsertDto;
@@ -16,6 +17,11 @@ public class ProductService {
 
     public void insert(ProductInsertDto dto) {
         Product product = dtoToEntity(dto);
+
+        if (productDao.findByName(product.getName()) != null &&
+                product.getName().equalsIgnoreCase(productDao.findByName(product.getName()).getName())) {
+            throw new BaseException("nome do produto ja cadastrado");
+        }
         productDao.insert(product);
     }
 
