@@ -7,10 +7,11 @@ import java.sql.*;
 import java.util.Date;
 import java.util.UUID;
 
-public class ProductDao {
+public class ProductDao implements InterfaceProductDao {
     private final ConnectionFactory factory = new ConnectionFactory();
     private final Connection connection = factory.getConnection();
 
+    @Override
     public Product insert(Product product) {
 
         try {
@@ -18,7 +19,7 @@ public class ProductDao {
                     "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
 
             PreparedStatement preparedStatement = connection.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS);
-            preparedStatement.setObject(1, product.getHash(),java.sql.Types.OTHER);
+            preparedStatement.setObject(1, product.getHash(), java.sql.Types.OTHER);
             preparedStatement.setString(2, product.getDescription());
             preparedStatement.setString(3, product.getName());
             preparedStatement.setString(4, product.getEan13());
@@ -47,16 +48,19 @@ public class ProductDao {
         return product;
     }
 
+    @Override
     public Product findByName(String param) {
         String sql = "SELECT * FROM produtos WHERE LOWER(nome) = LOWER(?)";
         return getProductFromDb(param, sql);
     }
 
+    @Override
     public Product findByEan13(String param) {
         String sql = "SELECT * FROM produtos WHERE LOWER(ean13) = LOWER(?)";
         return getProductFromDb(param, sql);
     }
 
+    @Override
     public UUID findHash(UUID param) {
         String sql = "SELECT hash FROM produtos WHERE hash = ?";
         PreparedStatement statement;
