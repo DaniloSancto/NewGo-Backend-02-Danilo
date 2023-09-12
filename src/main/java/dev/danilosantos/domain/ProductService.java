@@ -22,6 +22,12 @@ public class ProductService {
                 product.getName().equalsIgnoreCase(productDao.findByName(product.getName()).getName())) {
             throw new BaseException("nome do produto ja cadastrado");
         }
+
+        if (productDao.findByEan13(product.getEan13()) != null &&
+                product.getEan13().equalsIgnoreCase(productDao.findByEan13(product.getEan13()).getEan13())) {
+            throw new BaseException("ean13 do produto ja cadastrado");
+        }
+
         productDao.insert(product);
     }
 

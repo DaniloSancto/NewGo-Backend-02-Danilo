@@ -47,13 +47,21 @@ public class ProductDao {
         return product;
     }
 
-    public Product findByName(String paramName) {
+    public Product findByName(String param) {
         String sql = "SELECT * FROM produtos WHERE LOWER(nome) = LOWER(?)";
-        PreparedStatement statement;
+        return getProductFromDb(param, sql);
+    }
 
+    public Product findByEan13(String param) {
+        String sql = "SELECT * FROM produtos WHERE LOWER(ean13) = LOWER(?)";
+        return getProductFromDb(param, sql);
+    }
+
+    private Product getProductFromDb(String param, String sql) {
+        PreparedStatement statement;
         try {
             statement = connection.prepareStatement(sql);
-            statement.setString(1, paramName);
+            statement.setString(1, param);
             ResultSet rs = statement.executeQuery();
 
             Product product = null;
