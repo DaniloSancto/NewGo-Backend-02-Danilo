@@ -2,11 +2,14 @@ package dev.danilosantos.infrastructure.dao;
 
 import dev.danilosantos.infrastructure.Product;
 
+import java.util.List;
 import java.util.UUID;
 
 public interface InterfaceProductDao {
 
     Product insert(Product product);
+
+    List<Product> findAll();
 
     Product findByName(String param);
 
