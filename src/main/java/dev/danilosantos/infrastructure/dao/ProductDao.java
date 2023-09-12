@@ -57,6 +57,26 @@ public class ProductDao {
         return getProductFromDb(param, sql);
     }
 
+    public UUID findHash(UUID param) {
+        String sql = "SELECT hash FROM produtos WHERE hash = ?";
+        PreparedStatement statement;
+        try {
+            statement = connection.prepareStatement(sql);
+            statement.setObject(1, param);
+            ResultSet rs = statement.executeQuery();
+            UUID hash = null;
+            if (rs.next()) {
+                hash = UUID.fromString(rs.getString("hash"));
+            }
+            statement.close();
+            rs.close();
+            return hash;
+        }
+        catch (SQLException ex) {
+            throw new RuntimeException(ex);
+        }
+    }
+
     private Product getProductFromDb(String param, String sql) {
         PreparedStatement statement;
         try {

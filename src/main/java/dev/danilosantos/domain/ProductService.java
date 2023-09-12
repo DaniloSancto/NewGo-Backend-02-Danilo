@@ -59,7 +59,7 @@ public class ProductService {
 
     private Product dtoToEntity(ProductInsertDto dto) {
         return new Product(
-                UUID.randomUUID(),
+                generateUniqueHash(),
                 dto.getName(),
                 dto.getDescription(),
                 dto.getEan13(),
@@ -69,5 +69,16 @@ public class ProductService {
                 new Date(),
                 null,
                 false);
+    }
+
+    private UUID generateUniqueHash() {
+        UUID hash = UUID.randomUUID();
+
+        if(productDao.findHash(hash) != null) {
+            while (productDao.findHash(hash) != null) {
+                hash = UUID.randomUUID();
+            }
+        }
+        return hash;
     }
 }
