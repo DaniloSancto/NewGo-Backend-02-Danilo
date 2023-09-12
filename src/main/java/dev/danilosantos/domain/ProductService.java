@@ -2,6 +2,7 @@ package dev.danilosantos.domain;
 
 import dev.danilosantos.domain.exception.BaseException;
 import dev.danilosantos.infrastructure.Product;
+import dev.danilosantos.infrastructure.dao.InterfaceProductDao;
 import dev.danilosantos.infrastructure.dao.ProductDao;
 import dev.danilosantos.infrastructure.dto.ProductInsertDto;
 
@@ -9,28 +10,28 @@ import java.util.Date;
 import java.util.UUID;
 
 public class ProductService {
-    private final ProductDao productDao;
+    private final InterfaceProductDao dao;
 
     public ProductService() {
-        this.productDao = new ProductDao();
+        this.dao = new ProductDao();
     }
 
     public void insert(ProductInsertDto dto) {
         Product product = dtoToEntity(dto);
 
-        if (productDao.findByName(product.getName()) != null &&
-                product.getName().equalsIgnoreCase(productDao.findByName(product.getName()).getName())) {
+        if (dao.findByName(product.getName()) != null &&
+                product.getName().equalsIgnoreCase(dao.findByName(product.getName()).getName())) {
             throw new BaseException("nome do produto ja cadastrado");
         }
 
-        if (productDao.findByEan13(product.getEan13()) != null &&
-                product.getEan13().equalsIgnoreCase(productDao.findByEan13(product.getEan13()).getEan13())) {
+        if (dao.findByEan13(product.getEan13()) != null &&
+                product.getEan13().equalsIgnoreCase(dao.findByEan13(product.getEan13()).getEan13())) {
             throw new BaseException("ean13 do produto ja cadastrado");
         }
 
         verifyNullValues(product);
         verifyNegativeValues(product.getPrice(), product.getQuantity(), product.getMinStorage());
-        productDao.insert(product);
+        dao.insert(product);
     }
 
     private void verifyNegativeValues(Double price, Double quantity, Double minStorage) {
@@ -74,8 +75,8 @@ public class ProductService {
     private UUID generateUniqueHash() {
         UUID hash = UUID.randomUUID();
 
-        if(productDao.findHash(hash) != null) {
-            while (productDao.findHash(hash) != null) {
+        if(dao.findHash(hash) != null) {
+            while (dao.findHash(hash) != null) {
                 hash = UUID.randomUUID();
             }
         }
