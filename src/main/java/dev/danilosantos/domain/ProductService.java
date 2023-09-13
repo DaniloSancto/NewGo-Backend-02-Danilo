@@ -35,6 +35,12 @@ public class ProductService {
         dao.insert(product);
     }
 
+    public void deleteById(Long id) {
+        if(!dao.deleteById(id)) {
+            throw new BaseException("produto nao encontrado");
+        }
+    }
+
     public List<Product> findAll() {
         return dao.findAll();
     }
