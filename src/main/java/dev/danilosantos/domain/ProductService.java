@@ -5,6 +5,7 @@ import dev.danilosantos.infrastructure.Product;
 import dev.danilosantos.infrastructure.dao.InterfaceProductDao;
 import dev.danilosantos.infrastructure.dao.ProductDao;
 import dev.danilosantos.infrastructure.dto.ProductInsertDto;
+import dev.danilosantos.infrastructure.dto.ProductUpdateDto;
 
 import java.util.Date;
 import java.util.List;
@@ -18,7 +19,7 @@ public class ProductService {
     }
 
     public void insert(ProductInsertDto dto) {
-        Product product = dtoToEntity(dto);
+        Product product = insertDtoToEntity(dto);
 
         if (dao.findByName(product.getName()) != null &&
                 product.getName().equalsIgnoreCase(dao.findByName(product.getName()).getName())) {
@@ -33,6 +34,14 @@ public class ProductService {
         verifyNullValues(product);
         verifyNegativeValues(product.getPrice(), product.getQuantity(), product.getMinStorage());
         dao.insert(product);
+    }
+
+    public void updateByHash(UUID hash, ProductUpdateDto dto) {
+        Product product = dao.findByHash(hash);
+
+        if(product != null) {
+            dao.updateByHash(hash, updateDtoToEntity(dto, product));
+        }
     }
 
     public void deleteById(Long id) {
@@ -69,7 +78,22 @@ public class ProductService {
         }
     }
 
-    private Product dtoToEntity(ProductInsertDto dto) {
+    private Product updateDtoToEntity(ProductUpdateDto dto, Product product) {
+        return new Product(
+                product.getId(),
+                product.getHash(),
+                product.getName(),
+                dto.getDescription(),
+                product.getEan13(),
+                dto.getPrice(),
+                dto.getQuantity(),
+                dto.getMinStorage(),
+                product.getDtCreate(),
+                new Date(),
+                product.getActive());
+    }
+
+    private Product insertDtoToEntity(ProductInsertDto dto) {
         return new Product(
                 generateUniqueHash(),
                 dto.getName(),
