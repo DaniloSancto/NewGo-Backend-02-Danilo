@@ -16,4 +16,6 @@ public interface InterfaceProductDao {
     Product findByEan13(String param);
 
     UUID findHash(UUID param);
+
+    boolean deleteById(Long id);
 }
