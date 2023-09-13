@@ -114,7 +114,7 @@ public class ProductDao implements InterfaceProductDao {
                         rs.getDouble("quantidade"),
                         rs.getDouble("estoque_min"),
                         rs.getTimestamp("dtcreate"),
-                        rs.getDate("dtupdate"),
+                        rs.getTimestamp("dtupdate"),
                         rs.getBoolean("lativo")
                 );
                 list.add(product);
