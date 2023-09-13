@@ -5,6 +5,7 @@ import dev.danilosantos.domain.ProductService;
 import dev.danilosantos.domain.exception.BaseException;
 import dev.danilosantos.domain.exception.JsonException;
 import dev.danilosantos.infrastructure.dto.ProductInsertDto;
+import dev.danilosantos.infrastructure.dto.ProductUpdateDto;
 
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
@@ -14,6 +15,7 @@ import javax.servlet.http.HttpServletResponse;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.PrintWriter;
+import java.util.UUID;
 
 @WebServlet("/products/*")
 public class ProductServlet extends HttpServlet {
@@ -35,6 +37,33 @@ public class ProductServlet extends HttpServlet {
             }
             ProductInsertDto productDto = gson.fromJson(json.toString(), ProductInsertDto.class);
             service.insert(productDto);
+            response.setStatus(200);
+        } catch (BaseException e) {
+            out.print(gson.toJson(new JsonException(e.getMessage())));
+            response.setStatus(400);
+        }
+    }
+
+    @Override
+    protected void doPut(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+        PrintWriter out = response.getWriter();
+        request.setCharacterEncoding("UTF-8");
+        response.setCharacterEncoding("UTF-8");
+        try {
+            BufferedReader reader = request.getReader();
+            StringBuilder json = new StringBuilder();
+            String line;
+            while ((line = reader.readLine()) != null) {
+                json.append(line.trim());
+            }
+            ProductUpdateDto productDto = gson.fromJson(json.toString(), ProductUpdateDto.class);
+
+            String requestURI = request.getRequestURI();
+            String[] parts = requestURI.split("/");
+            if (parts.length == 3 && "products".equals(parts[1])) {
+                String productHash = parts[2];
+                service.updateByHash(UUID.fromString(productHash), productDto);
+            }
             response.setStatus(200);
         } catch (BaseException e) {
             out.print(gson.toJson(new JsonException(e.getMessage())));
