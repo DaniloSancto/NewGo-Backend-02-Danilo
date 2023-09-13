@@ -42,7 +42,7 @@ public class ProductService {
 
     public void updateByHash(UUID hash, ProductUpdateDto dto) {
         Product product = dao.findByHash(hash);
-        
+
         if(product == null) {
             throw new BaseException("produto nao encontrado");
         }
@@ -53,9 +53,14 @@ public class ProductService {
         dao.updateByHash(hash, updateDtoToEntity(dto, product));
     }
 
-    public void deleteById(Long id) {
-        if(!dao.deleteById(id)) {
-            throw new BaseException("produto nao encontrado");
+    public void deleteByHash(String hashStr) {
+        try {
+            if(!dao.deleteByHash(UUID.fromString(hashStr))) {
+                throw new BaseException("produto nao encontrado");
+            }
+        }
+        catch (IllegalArgumentException e) {
+            throw new BaseException(e.getMessage());
         }
     }
 

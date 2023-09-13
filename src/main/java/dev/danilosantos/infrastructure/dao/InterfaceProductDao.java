@@ -21,5 +21,5 @@ public interface InterfaceProductDao {
 
     UUID findHash(UUID param);
 
-    boolean deleteById(Long id);
+    boolean deleteByHash(UUID hash);
 }

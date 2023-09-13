@@ -82,11 +82,11 @@ public class ProductDao implements InterfaceProductDao {
     }
 
     @Override
-    public boolean deleteById(Long id) {
-        String sql = "DELETE FROM produtos WHERE id = ?";
+    public boolean deleteByHash(UUID hash) {
+        String sql = "DELETE FROM produtos WHERE hash = ?";
         try {
             PreparedStatement statement = connection.prepareStatement(sql);
-            statement.setObject(1, id);
+            statement.setObject(1, hash);
             if(statement.executeUpdate() != 0) {
                 return true;
             }

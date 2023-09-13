@@ -80,7 +80,7 @@ public class ProductServlet extends HttpServlet {
         out.print(gson.toJson(service.findAll()));
     }
 
-    // método doDelete: pega o terceiro parâmetro da URL (esperando ser um ID) manda para camada de serviço para deletar o produto
+    // método doDelete: pega o terceiro parâmetro da URL (esperando ser um UUID) manda para camada de serviço para deletar o produto
     @Override
     protected void doDelete(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         PrintWriter out = response.getWriter();
@@ -90,8 +90,8 @@ public class ProductServlet extends HttpServlet {
             String requestURI = request.getRequestURI();
             String[] parts = requestURI.split("/");
             if (parts.length == 3 && "products".equals(parts[1])) {
-                String productId = parts[2];
-                service.deleteById(Long.parseLong(productId));
+                String productHashStr = parts[2];
+                service.deleteByHash(productHashStr);
                 response.setStatus(200);
             }
         } catch (BaseException e) {
