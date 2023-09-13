@@ -41,20 +41,25 @@ public class ProductService {
     }
 
     public void updateByHash(UUID hash, ProductUpdateDto dto) {
-        Product baseProduct = dao.findByHash(hash);
+        try {
+            Product baseProduct = dao.findByHash(hash);
 
-        if(baseProduct == null) {
-            throw new BaseException("produto nao encontrado");
+            if(baseProduct == null) {
+                throw new BaseException("produto nao encontrado");
+            }
+
+            if(!baseProduct.getActive()) {
+                throw new BaseException("produto inativo nao pode ser atualizado");
+            }
+
+            Product product = updateDtoToEntity(dto, baseProduct);
+            verifyNullValues(product);
+            verifyNegativeValues(product.getPrice(), product.getQuantity(), product.getMinStorage());
+            dao.updateByHash(hash, product);
         }
-
-        if(!baseProduct.getActive()) {
-            throw new BaseException("produto inativo nao pode ser atualizado");
+                catch (IllegalArgumentException e) {
+            throw new BaseException(e.getMessage());
         }
-
-        Product product = updateDtoToEntity(dto, baseProduct);
-        verifyNullValues(product);
-        verifyNegativeValues(product.getPrice(), product.getQuantity(), product.getMinStorage());
-        dao.updateByHash(hash, product);
     }
 
     public void changeToActiveByHash(String hashStr) {
