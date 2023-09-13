@@ -72,6 +72,19 @@ public class ProductService {
         return dao.findAll();
     }
 
+    public Product findByHash(String hashStr) {
+        try {
+            if(dao.findHash(UUID.fromString(hashStr)) == null) {
+                throw new BaseException("produto nao encontrado");
+            }
+            return dao.findByHash(UUID.fromString(hashStr));
+
+        }
+            catch (IllegalArgumentException e) {
+            throw new BaseException(e.getMessage());
+        }
+    }
+
     private void verifyNegativeValues(Double price, Double quantity, Double minStorage) {
         if (price < 0) {
             throw new BaseException("preco nao pode ser um valor negativo");

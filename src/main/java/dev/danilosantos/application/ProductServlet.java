@@ -74,10 +74,24 @@ public class ProductServlet extends HttpServlet {
     // método doGet: chama o método findAll da camada de serviço retornando todos os produtos do banco de dados
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+        PrintWriter out = response.getWriter();
         request.setCharacterEncoding("UTF-8");
         response.setCharacterEncoding("UTF-8");
-        PrintWriter out = response.getWriter();
-        out.print(gson.toJson(service.findAll()));
+        try {
+            String requestURI = request.getRequestURI();
+            String[] parts = requestURI.split("/");
+            if (parts.length == 3 && "products".equals(parts[1])) {
+                String hashStr = parts[2];
+                out.print(gson.toJson(service.findByHash(hashStr)));
+                response.setStatus(200);
+            }
+            else if(parts.length == 2&& "products".equals(parts[1])) {
+                out.print(gson.toJson(service.findAll()));
+            }
+        } catch (BaseException e) {
+            out.print(gson.toJson(new JsonException(e.getMessage())));
+            response.setStatus(400);
+        }
     }
 
     // método doDelete: pega o terceiro parâmetro da URL (esperando ser um UUID) manda para camada de serviço para deletar o produto
