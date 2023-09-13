@@ -19,6 +19,10 @@ public class ProductService {
     }
 
     public void insert(ProductInsertDto dto) {
+        if(dto.getName() == null || dto.getName().trim().isEmpty()) {
+            throw new BaseException("nome do produto nao pode ser nulo ou vazio");
+        }
+
         Product product = insertDtoToEntity(dto);
 
         if (dao.findByName(product.getName()) != null &&
