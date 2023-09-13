@@ -51,6 +51,23 @@ public class ProductDao implements InterfaceProductDao {
     }
 
     @Override
+    public boolean deleteById(Long id) {
+        String sql = "DELETE FROM produtos WHERE id = ?";
+        try {
+            PreparedStatement statement = connection.prepareStatement(sql);
+            statement.setObject(1, id);
+            if(statement.executeUpdate() != 0) {
+                return true;
+            }
+            statement.close();
+            return false;
+        }
+        catch (SQLException ex) {
+            throw new RuntimeException(ex);
+        }
+    }
+
+    @Override
     public List<Product> findAll() {
         String sql = "SELECT * FROM produtos";
         PreparedStatement statement;
