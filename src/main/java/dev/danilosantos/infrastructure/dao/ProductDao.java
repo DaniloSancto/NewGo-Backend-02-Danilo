@@ -50,6 +50,37 @@ public class ProductDao implements InterfaceProductDao {
         return product;
     }
 
+    public boolean updateByHash(UUID hash, Product product) {
+        try {
+            String sql =
+                    "UPDATE produtos " +
+                    "SET descricao = ?, preco = ?, quantidade = ?, estoque_min = ?, dtupdate = ?" +
+                    "WHERE hash = ?;";
+
+            PreparedStatement statement = connection.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS);
+            statement.setObject(6, hash, java.sql.Types.OTHER);
+            statement.setString(1, product.getDescription());
+            statement.setDouble(2, product.getPrice());
+            statement.setDouble(3, product.getQuantity());
+            statement.setDouble(4, product.getMinStorage());
+            statement.setTimestamp(5, getTimeStampOrNull(product.getDtUpdate()));
+
+            statement.executeUpdate();
+
+            ResultSet resultSet = statement.getGeneratedKeys();
+            if(resultSet.next()) {
+                return true;
+            }
+
+            statement.close();
+            resultSet.close();
+            return false;
+        }
+        catch (SQLException ex) {
+            throw new RuntimeException(ex);
+        }
+    }
+
     @Override
     public boolean deleteById(Long id) {
         String sql = "DELETE FROM produtos WHERE id = ?";
@@ -113,6 +144,21 @@ public class ProductDao implements InterfaceProductDao {
         return getProductFromDb(param, sql);
     }
 
+    public Product findByHash(UUID param) {
+        String sql = "SELECT * FROM produtos WHERE hash = ?";
+        PreparedStatement statement;
+        try {
+            statement = connection.prepareStatement(sql);
+            statement.setObject(1, param);
+            ResultSet rs = statement.executeQuery();
+
+            return getProduct(statement, rs);
+        }
+        catch (SQLException ex) {
+            throw new RuntimeException(ex);
+        }
+    }
+
     @Override
     public UUID findHash(UUID param) {
         String sql = "SELECT hash FROM produtos WHERE hash = ?";
@@ -141,29 +187,33 @@ public class ProductDao implements InterfaceProductDao {
             statement.setString(1, param);
             ResultSet rs = statement.executeQuery();
 
-            Product product = null;
-            if (rs.next()) {
-                product = new Product(
-                        rs.getLong("id"),
-                        UUID.fromString(rs.getString("hash")),
-                        rs.getString("nome"),
-                        rs.getString("descricao"),
-                        rs.getString("ean13"),
-                        rs.getDouble("preco"),
-                        rs.getDouble("quantidade"),
-                        rs.getDouble("estoque_min"),
-                        rs.getTimestamp("dtcreate"),
-                        rs.getDate("dtupdate"),
-                        rs.getBoolean("lativo")
-                );
-            }
-            statement.close();
-            rs.close();
-            return product;
+            return getProduct(statement, rs);
         }
         catch (SQLException ex) {
             throw new RuntimeException(ex);
         }
+    }
+
+    private Product getProduct(PreparedStatement statement, ResultSet rs) throws SQLException {
+        Product product = null;
+        if (rs.next()) {
+            product = new Product(
+                    rs.getLong("id"),
+                    UUID.fromString(rs.getString("hash")),
+                    rs.getString("nome"),
+                    rs.getString("descricao"),
+                    rs.getString("ean13"),
+                    rs.getDouble("preco"),
+                    rs.getDouble("quantidade"),
+                    rs.getDouble("estoque_min"),
+                    rs.getTimestamp("dtcreate"),
+                    rs.getDate("dtupdate"),
+                    rs.getBoolean("lativo")
+            );
+        }
+        statement.close();
+        rs.close();
+        return product;
     }
 
     private Timestamp getTimeStampOrNull(Date date) {
