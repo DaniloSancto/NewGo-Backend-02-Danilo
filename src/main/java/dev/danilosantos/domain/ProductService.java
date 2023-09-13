@@ -40,8 +40,9 @@ public class ProductService {
         dao.insert(product);
     }
 
-    public void updateByHash(UUID hash, ProductUpdateDto dto) {
+    public void updateByHash(String hashStr, ProductUpdateDto dto) {
         try {
+            UUID hash = UUID.fromString(hashStr);
             Product baseProduct = dao.findByHash(hash);
 
             if(baseProduct == null) {

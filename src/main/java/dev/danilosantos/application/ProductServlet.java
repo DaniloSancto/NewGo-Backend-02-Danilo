@@ -62,8 +62,8 @@ public class ProductServlet extends HttpServlet {
             String requestURI = request.getRequestURI();
             String[] parts = requestURI.split("/");
             if (parts.length == 3 && "products".equals(parts[1])) {
-                String productHash = parts[2];
-                service.updateByHash(UUID.fromString(productHash), productDto);
+                String hashStr = parts[2];
+                service.updateByHash(hashStr, productDto);
             }
             response.setStatus(200);
         } catch (BaseException e) {
