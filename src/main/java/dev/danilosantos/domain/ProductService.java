@@ -41,16 +41,20 @@ public class ProductService {
     }
 
     public void updateByHash(UUID hash, ProductUpdateDto dto) {
-        Product product = dao.findByHash(hash);
+        Product baseProduct = dao.findByHash(hash);
 
-        if(product == null) {
+        if(baseProduct == null) {
             throw new BaseException("produto nao encontrado");
         }
 
-        if(!product.getActive()) {
+        if(!baseProduct.getActive()) {
             throw new BaseException("produto inativo nao pode ser atualizado");
         }
-        dao.updateByHash(hash, updateDtoToEntity(dto, product));
+
+        Product product = updateDtoToEntity(dto, baseProduct);
+        verifyNullValues(product);
+        verifyNegativeValues(product.getPrice(), product.getQuantity(), product.getMinStorage());
+        dao.updateByHash(hash, product);
     }
 
     public void deleteByHash(String hashStr) {
