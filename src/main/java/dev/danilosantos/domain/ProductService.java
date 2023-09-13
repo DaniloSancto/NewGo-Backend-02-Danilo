@@ -57,6 +57,10 @@ public class ProductService {
         dao.updateByHash(hash, product);
     }
 
+    public void changeToActiveByHash(String hashStr) {
+        dao.changeToActiveByHash(UUID.fromString(hashStr));
+    }
+
     public void deleteByHash(String hashStr) {
         try {
             if(!dao.deleteByHash(UUID.fromString(hashStr))) {

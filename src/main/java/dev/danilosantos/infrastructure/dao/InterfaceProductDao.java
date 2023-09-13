@@ -11,6 +11,8 @@ public interface InterfaceProductDao {
 
     void updateByHash(UUID hash, Product product);
 
+    void changeToActiveByHash(UUID hash);
+
     List<Product> findAll();
 
     Product findByName(String param);

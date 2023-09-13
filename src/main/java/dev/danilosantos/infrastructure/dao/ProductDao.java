@@ -77,6 +77,30 @@ public class ProductDao implements InterfaceProductDao {
         }
     }
 
+    public void changeToActiveByHash(UUID hash) {
+        try {
+            String sql =
+                    "UPDATE produtos " +
+                    "SET lativo = ?" +
+                    "WHERE hash = ?;";
+
+            PreparedStatement statement = connection.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS);
+            statement.setObject(2, hash, java.sql.Types.OTHER);
+            statement.setBoolean(1, true);
+
+            statement.executeUpdate();
+
+            ResultSet resultSet = statement.getGeneratedKeys();
+            resultSet.next();
+
+            statement.close();
+            resultSet.close();
+        }
+        catch (SQLException ex) {
+            throw new RuntimeException(ex);
+        }
+    }
+
     @Override
     public boolean deleteByHash(UUID hash) {
         String sql = "DELETE FROM produtos WHERE hash = ?";
