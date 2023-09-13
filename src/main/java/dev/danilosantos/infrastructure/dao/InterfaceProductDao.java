@@ -7,9 +7,9 @@ import java.util.UUID;
 
 public interface InterfaceProductDao {
 
-    Product insert(Product product);
+    void insert(Product product);
 
-    boolean updateByHash(UUID hash, Product product);
+    void updateByHash(UUID hash, Product product);
 
     List<Product> findAll();
 
