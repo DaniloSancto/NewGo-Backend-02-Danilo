@@ -4,8 +4,6 @@ import dev.danilosantos.domain.exception.BaseException;
 import dev.danilosantos.infrastructure.entities.Product;
 import dev.danilosantos.infrastructure.dao.InterfaceProductDao;
 import dev.danilosantos.infrastructure.dao.ProductDao;
-import dev.danilosantos.domain.dto.ProductInsertDto;
-import dev.danilosantos.domain.dto.ProductUpdateDto;
 
 import java.util.Date;
 import java.util.List;

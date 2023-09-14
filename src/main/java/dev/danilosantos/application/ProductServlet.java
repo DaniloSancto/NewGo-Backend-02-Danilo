@@ -5,8 +5,8 @@ import com.google.gson.GsonBuilder;
 import dev.danilosantos.domain.ProductService;
 import dev.danilosantos.domain.exception.BaseException;
 import dev.danilosantos.domain.exception.JsonError;
-import dev.danilosantos.domain.dto.ProductInsertDto;
-import dev.danilosantos.domain.dto.ProductUpdateDto;
+import dev.danilosantos.application.dto.ProductInsertDto;
+import dev.danilosantos.application.dto.ProductUpdateDto;
 import dev.danilosantos.infrastructure.entities.Product;
 
 import javax.servlet.ServletException;
