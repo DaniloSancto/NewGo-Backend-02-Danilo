@@ -35,13 +35,7 @@ public class ProductService {
             UUID hash = UUID.fromString(hashStr);
             Product baseProduct = dao.findByHash(hash);
 
-            if(baseProduct == null) {
-                throw new BaseException("produto nao encontrado");
-            }
-
-            if(!baseProduct.getActive()) {
-                throw new BaseException("produto inativo nao pode ser atualizado");
-            }
+            updateVerifications(baseProduct);
 
             Product product = updateDtoToEntity(dto, baseProduct);
             verifyNullValues(product);
@@ -124,6 +118,16 @@ public class ProductService {
         }
         if (product.getMinStorage() == null) {
             product.setMinStorage(0.0);
+        }
+    }
+
+    private void updateVerifications(Product product) {
+        if(product == null) {
+            throw new BaseException("produto nao encontrado");
+        }
+
+        if(!product.getActive()) {
+            throw new BaseException("produto inativo nao pode ser atualizado");
         }
     }
 
