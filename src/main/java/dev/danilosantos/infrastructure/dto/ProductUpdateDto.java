@@ -1,8 +1,5 @@
 package dev.danilosantos.infrastructure.dto;
 
-import java.util.Date;
-import java.util.UUID;
-
 public class ProductUpdateDto {
     private String description;
     private Double price;

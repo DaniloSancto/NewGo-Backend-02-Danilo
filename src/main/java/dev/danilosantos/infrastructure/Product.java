@@ -46,15 +46,6 @@ public class Product {
         this.active = active;
     }
 
-    public Product(String name, String description, String ean13, Double price, Double quantity, Double minStorage) {
-        this.name = name;
-        this.description = description;
-        this.ean13 = ean13;
-        this.price = price;
-        this.quantity = quantity;
-        this.minStorage = minStorage;
-    }
-
     public Long getId() {
         return id;
     }
