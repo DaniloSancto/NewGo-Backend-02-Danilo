@@ -1,6 +1,6 @@
 package dev.danilosantos.infrastructure.dao;
 
-import dev.danilosantos.infrastructure.Product;
+import dev.danilosantos.infrastructure.entities.Product;
 import dev.danilosantos.infrastructure.database.ConnectionFactory;
 
 import java.sql.*;

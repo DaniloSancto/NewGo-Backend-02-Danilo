@@ -1,4 +1,4 @@
-package dev.danilosantos.infrastructure;
+package dev.danilosantos.infrastructure.entities;
 
 import java.util.Date;
 import java.util.UUID;

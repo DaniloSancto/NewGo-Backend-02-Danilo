@@ -1,7 +1,7 @@
 package dev.danilosantos.domain;
 
 import dev.danilosantos.domain.exception.BaseException;
-import dev.danilosantos.infrastructure.Product;
+import dev.danilosantos.infrastructure.entities.Product;
 import dev.danilosantos.infrastructure.dao.InterfaceProductDao;
 import dev.danilosantos.infrastructure.dao.ProductDao;
 import dev.danilosantos.domain.dto.ProductInsertDto;

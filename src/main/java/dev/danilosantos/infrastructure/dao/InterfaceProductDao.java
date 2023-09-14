@@ -1,6 +1,6 @@
 package dev.danilosantos.infrastructure.dao;
 
-import dev.danilosantos.infrastructure.Product;
+import dev.danilosantos.infrastructure.entities.Product;
 
 import java.util.List;
 import java.util.UUID;
