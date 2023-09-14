@@ -36,7 +36,7 @@ public class ProductServlet extends HttpServlet {
                 json.append(line.trim());
             }
             ProductInsertDto productDto = gson.fromJson(json.toString(), ProductInsertDto.class);
-            service.insert(insertToEntity(productDto));
+            service.insert(productDto);
             response.setStatus(200);
         } catch (BaseException e) {
             response.getWriter().write(gson.toJson(new JsonError(e.getMessage())));
@@ -62,7 +62,7 @@ public class ProductServlet extends HttpServlet {
             String[] parts = requestURI.split("/");
             if (parts.length == 3 && "products".equals(parts[1])) {
                 String hashStr = parts[2];
-                service.updateByHash(hashStr, updateToEntity(productDto));
+                service.updateByHash(hashStr, productDto);
             }
             response.setStatus(200);
         } catch (BaseException e) {
@@ -113,13 +113,5 @@ public class ProductServlet extends HttpServlet {
             response.getWriter().write(gson.toJson(new JsonError(e.getMessage())));
             response.setStatus(400);
         }
-    }
-
-    private Product insertToEntity(ProductInsertDto dto) {
-        return new Product(dto.getName(), dto.getDescription(),dto.getEan13(),dto.getPrice(),dto.getQuantity(),dto.getMinStorage());
-    }
-
-    private Product updateToEntity(ProductUpdateDto dto) {
-        return new Product(dto.getDescription(),dto.getPrice(),dto.getQuantity(),dto.getMinStorage());
     }
 }

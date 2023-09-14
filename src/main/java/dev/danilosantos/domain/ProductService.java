@@ -1,5 +1,7 @@
 package dev.danilosantos.domain;
 
+import dev.danilosantos.application.dto.ProductInsertDto;
+import dev.danilosantos.application.dto.ProductUpdateDto;
 import dev.danilosantos.domain.exception.BaseException;
 import dev.danilosantos.infrastructure.entities.Product;
 import dev.danilosantos.infrastructure.dao.InterfaceProductDao;
@@ -16,10 +18,10 @@ public class ProductService {
         this.dao = new ProductDao();
     }
 
-    public void insert(Product productToNormalize) {
-        verifyIfNameAreNull(productToNormalize.getName());
+    public void insert(ProductInsertDto dto) {
+        verifyIfNameAreNull(dto.getName());
 
-        Product product = insertDtoToEntity(productToNormalize);
+        Product product = insertDtoToEntity(dto);
 
         verifyIfNameOrEan13AreInUse(product.getName(), product.getEan13());
 
@@ -28,14 +30,14 @@ public class ProductService {
         dao.insert(product);
     }
 
-    public void updateByHash(String hashStr, Product productToNormalize) {
+    public void updateByHash(String hashStr, ProductUpdateDto dto) {
         try {
             UUID hash = UUID.fromString(hashStr);
             Product baseProduct = dao.findByHash(hash);
 
             updateVerifications(baseProduct);
 
-            Product product = updateDtoToEntity(productToNormalize, baseProduct);
+            Product product = updateDtoToEntity(dto, baseProduct);
             verifyNullValues(product);
             verifyNegativeValues(product.getPrice(), product.getQuantity(), product.getMinStorage());
             dao.updateByHash(hash, product);
@@ -129,16 +131,16 @@ public class ProductService {
         }
     }
 
-    private Product updateDtoToEntity(Product productToNormalize, Product product) {
+    private Product updateDtoToEntity(ProductUpdateDto dto, Product product) {
         return new Product(
                 product.getId(),
                 product.getHash(),
                 product.getName(),
-                verifyIfDescriptionAreNull(productToNormalize.getDescription(), product),
+                verifyIfDescriptionAreNull(dto.getDescription(), product),
                 product.getEan13(),
-                verifyIfPriceAreNull(productToNormalize.getPrice(), product),
-                verifyIfQuantityAreNull(productToNormalize.getQuantity(), product),
-                verifyIfMinStorageAreNull(productToNormalize.getMinStorage(), product),
+                verifyIfPriceAreNull(dto.getPrice(), product),
+                verifyIfQuantityAreNull(dto.getQuantity(), product),
+                verifyIfMinStorageAreNull(dto.getMinStorage(), product),
                 product.getDtCreate(),
                 new Date(),
                 product.getActive());
@@ -164,15 +166,15 @@ public class ProductService {
         return minStorage;
     }
 
-    private Product insertDtoToEntity(Product productToNormalize) {
+    private Product insertDtoToEntity(ProductInsertDto dto) {
         return new Product(
                 generateUniqueHash(),
-                productToNormalize.getName(),
-                productToNormalize.getDescription(),
-                productToNormalize.getEan13(),
-                productToNormalize.getPrice(),
-                productToNormalize.getQuantity(),
-                productToNormalize.getMinStorage(),
+                dto.getName(),
+                dto.getDescription(),
+                dto.getEan13(),
+                dto.getPrice(),
+                dto.getQuantity(),
+                dto.getMinStorage(),
                 new Date(),
                 null,
                 false);
