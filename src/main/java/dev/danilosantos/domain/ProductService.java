@@ -63,8 +63,21 @@ public class ProductService {
         }
     }
 
-    public void changeToActiveByHash(String hashStr) {
-        dao.changeToActiveByHash(UUID.fromString(hashStr));
+    public List<Product> findAll() {
+        return dao.findAll();
+    }
+
+    public Product findByHash(String hashStr) {
+        try {
+            if(dao.findHash(UUID.fromString(hashStr)) == null) {
+                throw new BaseException("produto nao encontrado");
+            }
+            return dao.findByHash(UUID.fromString(hashStr));
+
+        }
+        catch (IllegalArgumentException e) {
+            throw new BaseException(e.getMessage());
+        }
     }
 
     public void deleteByHash(String hashStr) {
@@ -78,21 +91,8 @@ public class ProductService {
         }
     }
 
-    public List<Product> findAll() {
-        return dao.findAll();
-    }
-
-    public Product findByHash(String hashStr) {
-        try {
-            if(dao.findHash(UUID.fromString(hashStr)) == null) {
-                throw new BaseException("produto nao encontrado");
-            }
-            return dao.findByHash(UUID.fromString(hashStr));
-
-        }
-            catch (IllegalArgumentException e) {
-            throw new BaseException(e.getMessage());
-        }
+    public void changeToActiveByHash(String hashStr) {
+        dao.changeToActiveByHash(UUID.fromString(hashStr));
     }
 
     private void verifyNegativeValues(Double price, Double quantity, Double minStorage) {
