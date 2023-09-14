@@ -124,14 +124,34 @@ public class ProductService {
                 product.getId(),
                 product.getHash(),
                 product.getName(),
-                dto.getDescription(),
+                verifyIfDescriptionAreNull(dto.getDescription(), product),
                 product.getEan13(),
-                dto.getPrice(),
-                dto.getQuantity(),
-                dto.getMinStorage(),
+                verifyIfPriceAreNull(dto.getPrice(), product),
+                verifyIfQuantityAreNull(dto.getQuantity(), product),
+                verifyIfMinStorageAreNull(dto.getMinStorage(), product),
                 product.getDtCreate(),
                 new Date(),
                 product.getActive());
+    }
+
+    private String verifyIfDescriptionAreNull(String description, Product product) {
+        if(description == null) return product.getDescription();
+        return description;
+    }
+
+    private Double verifyIfPriceAreNull(Double price, Product product) {
+        if(price == null) return product.getPrice();
+        return price;
+    }
+
+    private Double verifyIfQuantityAreNull(Double quantity, Product product) {
+        if(quantity == null) return product.getQuantity();
+        return quantity;
+    }
+
+    private Double verifyIfMinStorageAreNull(Double minStorage, Product product) {
+        if(minStorage == null) return product.getMinStorage();
+        return minStorage;
     }
 
     private Product insertDtoToEntity(ProductInsertDto dto) {
