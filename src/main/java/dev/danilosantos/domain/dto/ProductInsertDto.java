@@ -1,19 +1,28 @@
-package dev.danilosantos.infrastructure.dto;
+package dev.danilosantos.domain.dto;
 
-public class ProductUpdateDto {
+public class ProductInsertDto {
+    private String name;
     private String description;
+    private String ean13;
     private Double price;
     private Double quantity;
     private Double minStorage;
 
-    public ProductUpdateDto() {
-    }
-
-    public ProductUpdateDto(String description, Double price, Double quantity, Double minStorage) {
+    public ProductInsertDto(String name, String description, String ean13, Double price, Double quantity, Double minStorage) {
+        this.name = name;
         this.description = description;
+        this.ean13 = ean13;
         this.price = price;
         this.quantity = quantity;
         this.minStorage = minStorage;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
     }
 
     public String getDescription() {
@@ -22,6 +31,14 @@ public class ProductUpdateDto {
 
     public void setDescription(String description) {
         this.description = description;
+    }
+
+    public String getEan13() {
+        return ean13;
+    }
+
+    public void setEan13(String ean13) {
+        this.ean13 = ean13;
     }
 
     public Double getPrice() {

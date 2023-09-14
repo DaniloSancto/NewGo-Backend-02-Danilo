@@ -1,9 +1,9 @@
 package dev.danilosantos.domain.exception;
 
-public class JsonException {
+public class JsonError {
     private String error;
 
-    public JsonException(String error) {
+    public JsonError(String error) {
         this.error = error;
     }
 

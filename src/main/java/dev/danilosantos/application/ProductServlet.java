@@ -4,9 +4,9 @@ import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import dev.danilosantos.domain.ProductService;
 import dev.danilosantos.domain.exception.BaseException;
-import dev.danilosantos.domain.exception.JsonException;
-import dev.danilosantos.infrastructure.dto.ProductInsertDto;
-import dev.danilosantos.infrastructure.dto.ProductUpdateDto;
+import dev.danilosantos.domain.exception.JsonError;
+import dev.danilosantos.domain.dto.ProductInsertDto;
+import dev.danilosantos.domain.dto.ProductUpdateDto;
 
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
@@ -38,7 +38,7 @@ public class ProductServlet extends HttpServlet {
             service.insert(productDto);
             response.setStatus(200);
         } catch (BaseException e) {
-            response.getWriter().write(gson.toJson(new JsonException(e.getMessage())));
+            response.getWriter().write(gson.toJson(new JsonError(e.getMessage())));
             response.setStatus(400);
         }
     }
@@ -65,7 +65,7 @@ public class ProductServlet extends HttpServlet {
             }
             response.setStatus(200);
         } catch (BaseException e) {
-            response.getWriter().write(gson.toJson(new JsonException(e.getMessage())));
+            response.getWriter().write(gson.toJson(new JsonError(e.getMessage())));
             response.setStatus(400);
         }
     }
@@ -89,7 +89,7 @@ public class ProductServlet extends HttpServlet {
                 response.getWriter().write(gson.toJson(service.findAll()));
             }
         } catch (BaseException e) {
-            response.getWriter().write(gson.toJson(new JsonException(e.getMessage())));
+            response.getWriter().write(gson.toJson(new JsonError(e.getMessage())));
             response.setStatus(400);
         }
     }
@@ -109,7 +109,7 @@ public class ProductServlet extends HttpServlet {
                 response.setStatus(200);
             }
         } catch (BaseException e) {
-            response.getWriter().write(gson.toJson(new JsonException(e.getMessage())));
+            response.getWriter().write(gson.toJson(new JsonError(e.getMessage())));
             response.setStatus(400);
         }
     }
