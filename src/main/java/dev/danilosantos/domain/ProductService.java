@@ -19,21 +19,11 @@ public class ProductService {
     }
 
     public void insert(ProductInsertDto dto) {
-        if(dto.getName() == null || dto.getName().trim().isEmpty()) {
-            throw new BaseException("nome do produto nao pode ser nulo ou vazio");
-        }
+        verifyIfNameAreNull(dto.getName());
 
         Product product = insertDtoToEntity(dto);
 
-        if (dao.findByName(product.getName()) != null &&
-                product.getName().equalsIgnoreCase(dao.findByName(product.getName()).getName())) {
-            throw new BaseException("nome do produto ja cadastrado");
-        }
-
-        if (dao.findByEan13(product.getEan13()) != null &&
-                product.getEan13().equalsIgnoreCase(dao.findByEan13(product.getEan13()).getEan13())) {
-            throw new BaseException("ean13 do produto ja cadastrado");
-        }
+        verifyIfNameOrEan13AreInUse(product.getName(), product.getEan13());
 
         verifyNullValues(product);
         verifyNegativeValues(product.getPrice(), product.getQuantity(), product.getMinStorage());
@@ -93,6 +83,24 @@ public class ProductService {
 
     public void changeToActiveByHash(String hashStr) {
         dao.changeToActiveByHash(UUID.fromString(hashStr));
+    }
+
+    private void verifyIfNameAreNull(String name) {
+        if(name == null || name.trim().isEmpty()) {
+            throw new BaseException("nome do produto nao pode ser nulo ou vazio");
+        }
+    }
+
+    private void verifyIfNameOrEan13AreInUse(String name, String ean13) {
+        if (dao.findByName(name) != null &&
+                name.equalsIgnoreCase(dao.findByName(name).getName())) {
+            throw new BaseException("nome do produto ja cadastrado");
+        }
+
+        if (dao.findByEan13(ean13) != null &&
+                ean13.equalsIgnoreCase(dao.findByEan13(ean13).getEan13())) {
+            throw new BaseException("ean13 do produto ja cadastrado");
+        }
     }
 
     private void verifyNegativeValues(Double price, Double quantity, Double minStorage) {
