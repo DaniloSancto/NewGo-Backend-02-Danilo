@@ -1,8 +1,8 @@
 CREATE TABLE produtos (
 	id bigserial primary key,
 	hash uuid,
-	descricao text,
 	nome varchar(255) not null,
+	descricao text,
 	ean13 varchar(13),
 	preco  numeric(13,2) not null,
 	quantidade numeric(13,2) not null,
