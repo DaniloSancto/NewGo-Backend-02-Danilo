@@ -77,47 +77,6 @@ public class ProductDao implements InterfaceProductDao {
         }
     }
 
-    public void changeToActiveByHash(UUID hash) {
-        try {
-            String sql =
-                    "UPDATE produtos " +
-                    "SET lativo = ?" +
-                    "WHERE hash = ?;";
-
-            PreparedStatement statement = connection.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS);
-            statement.setObject(2, hash, java.sql.Types.OTHER);
-            statement.setBoolean(1, true);
-
-            statement.executeUpdate();
-
-            ResultSet resultSet = statement.getGeneratedKeys();
-            resultSet.next();
-
-            statement.close();
-            resultSet.close();
-        }
-        catch (SQLException ex) {
-            throw new RuntimeException(ex);
-        }
-    }
-
-    @Override
-    public boolean deleteByHash(UUID hash) {
-        String sql = "DELETE FROM produtos WHERE hash = ?";
-        try {
-            PreparedStatement statement = connection.prepareStatement(sql);
-            statement.setObject(1, hash);
-            if(statement.executeUpdate() != 0) {
-                return true;
-            }
-            statement.close();
-            return false;
-        }
-        catch (SQLException ex) {
-            throw new RuntimeException(ex);
-        }
-    }
-
     @Override
     public List<Product> findAll() {
         String sql = "SELECT * FROM produtos";
@@ -152,18 +111,6 @@ public class ProductDao implements InterfaceProductDao {
         }
     }
 
-    @Override
-    public Product findByName(String param) {
-        String sql = "SELECT * FROM produtos WHERE LOWER(nome) = LOWER(?)";
-        return getProductFromDb(param, sql);
-    }
-
-    @Override
-    public Product findByEan13(String param) {
-        String sql = "SELECT * FROM produtos WHERE LOWER(ean13) = LOWER(?)";
-        return getProductFromDb(param, sql);
-    }
-
     public Product findByHash(UUID param) {
         String sql = "SELECT * FROM produtos WHERE hash = ?";
         PreparedStatement statement;
@@ -177,6 +124,35 @@ public class ProductDao implements InterfaceProductDao {
         catch (SQLException ex) {
             throw new RuntimeException(ex);
         }
+    }
+
+    @Override
+    public boolean deleteByHash(UUID hash) {
+        String sql = "DELETE FROM produtos WHERE hash = ?";
+        try {
+            PreparedStatement statement = connection.prepareStatement(sql);
+            statement.setObject(1, hash);
+            if(statement.executeUpdate() != 0) {
+                return true;
+            }
+            statement.close();
+            return false;
+        }
+        catch (SQLException ex) {
+            throw new RuntimeException(ex);
+        }
+    }
+
+    @Override
+    public Product findByName(String param) {
+        String sql = "SELECT * FROM produtos WHERE LOWER(nome) = LOWER(?)";
+        return getProductFromDb(param, sql);
+    }
+
+    @Override
+    public Product findByEan13(String param) {
+        String sql = "SELECT * FROM produtos WHERE LOWER(ean13) = LOWER(?)";
+        return getProductFromDb(param, sql);
     }
 
     @Override
@@ -194,6 +170,30 @@ public class ProductDao implements InterfaceProductDao {
             statement.close();
             rs.close();
             return hash;
+        }
+        catch (SQLException ex) {
+            throw new RuntimeException(ex);
+        }
+    }
+
+    public void changeToActiveByHash(UUID hash) {
+        try {
+            String sql =
+                    "UPDATE produtos " +
+                            "SET lativo = ?" +
+                            "WHERE hash = ?;";
+
+            PreparedStatement statement = connection.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS);
+            statement.setObject(2, hash, java.sql.Types.OTHER);
+            statement.setBoolean(1, true);
+
+            statement.executeUpdate();
+
+            ResultSet resultSet = statement.getGeneratedKeys();
+            resultSet.next();
+
+            statement.close();
+            resultSet.close();
         }
         catch (SQLException ex) {
             throw new RuntimeException(ex);

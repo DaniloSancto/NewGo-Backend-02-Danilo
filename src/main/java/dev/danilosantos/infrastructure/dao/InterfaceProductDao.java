@@ -11,17 +11,17 @@ public interface InterfaceProductDao {
 
     void updateByHash(UUID hash, Product product);
 
-    void changeToActiveByHash(UUID hash);
-
     List<Product> findAll();
+
+    Product findByHash(UUID hash);
+
+    boolean deleteByHash(UUID hash);
 
     Product findByName(String param);
 
     Product findByEan13(String param);
 
-    Product findByHash(UUID hash);
-
     UUID findHash(UUID param);
 
-    boolean deleteByHash(UUID hash);
+    void changeToActiveByHash(UUID hash);
 }
