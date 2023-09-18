@@ -22,15 +22,15 @@ public class ProductDao implements InterfaceProductDao {
 
             PreparedStatement preparedStatement = connection.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS);
             preparedStatement.setObject(1, product.getHash(), java.sql.Types.OTHER);
-            preparedStatement.setString(2, product.getDescription());
-            preparedStatement.setString(3, product.getName());
+            preparedStatement.setString(2, product.getDescricao());
+            preparedStatement.setString(3, product.getNome());
             preparedStatement.setString(4, product.getEan13());
-            preparedStatement.setDouble(5, product.getPrice());
-            preparedStatement.setDouble(6, product.getQuantity());
-            preparedStatement.setDouble(7, product.getMinStorage());
+            preparedStatement.setDouble(5, product.getPreco());
+            preparedStatement.setDouble(6, product.getQuantidade());
+            preparedStatement.setDouble(7, product.getEstoqueMin());
             preparedStatement.setTimestamp(8, getTimeStampOrNull(product.getDtCreate()));
             preparedStatement.setTimestamp(9, getTimeStampOrNull(product.getDtUpdate()));
-            preparedStatement.setBoolean(10, product.getActive());
+            preparedStatement.setBoolean(10, product.getLAtivo());
 
             preparedStatement.executeUpdate();
 
@@ -58,10 +58,10 @@ public class ProductDao implements InterfaceProductDao {
 
             PreparedStatement statement = connection.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS);
             statement.setObject(6, hash, java.sql.Types.OTHER);
-            statement.setString(1, product.getDescription());
-            statement.setDouble(2, product.getPrice());
-            statement.setDouble(3, product.getQuantity());
-            statement.setDouble(4, product.getMinStorage());
+            statement.setString(1, product.getDescricao());
+            statement.setDouble(2, product.getPreco());
+            statement.setDouble(3, product.getQuantidade());
+            statement.setDouble(4, product.getEstoqueMin());
             statement.setTimestamp(5, getTimeStampOrNull(product.getDtUpdate()));
 
             statement.executeUpdate();

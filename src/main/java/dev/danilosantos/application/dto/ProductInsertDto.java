@@ -1,36 +1,39 @@
 package dev.danilosantos.application.dto;
 
+import java.util.Date;
+import java.util.UUID;
+
 public class ProductInsertDto {
-    private String name;
-    private String description;
+    private String nome;
+    private String descricao;
     private String ean13;
-    private Double price;
-    private Double quantity;
-    private Double minStorage;
+    private Double preco;
+    private Double quantidade;
+    private Double estoqueMin;
 
-    public ProductInsertDto(String name, String description, String ean13, Double price, Double quantity, Double minStorage) {
-        this.name = name;
-        this.description = description;
+    public ProductInsertDto(String nome, String descricao, String ean13, Double preco, Double quantidade, Double estoqueMin) {
+        this.nome = nome;
+        this.descricao = descricao;
         this.ean13 = ean13;
-        this.price = price;
-        this.quantity = quantity;
-        this.minStorage = minStorage;
+        this.preco = preco;
+        this.quantidade = quantidade;
+        this.estoqueMin = estoqueMin;
     }
 
-    public String getName() {
-        return name;
+    public String getNome() {
+        return nome;
     }
 
-    public void setName(String name) {
-        this.name = name;
+    public void setNome(String nome) {
+        this.nome = nome;
     }
 
-    public String getDescription() {
-        return description;
+    public String getDescricao() {
+        return descricao;
     }
 
-    public void setDescription(String description) {
-        this.description = description;
+    public void setDescricao(String descricao) {
+        this.descricao = descricao;
     }
 
     public String getEan13() {
@@ -41,27 +44,27 @@ public class ProductInsertDto {
         this.ean13 = ean13;
     }
 
-    public Double getPrice() {
-        return price;
+    public Double getPreco() {
+        return preco;
     }
 
-    public void setPrice(Double price) {
-        this.price = price;
+    public void setPreco(Double preco) {
+        this.preco = preco;
     }
 
-    public Double getQuantity() {
-        return quantity;
+    public Double getQuantidade() {
+        return quantidade;
     }
 
-    public void setQuantity(Double quantity) {
-        this.quantity = quantity;
+    public void setQuantidade(Double quantidade) {
+        this.quantidade = quantidade;
     }
 
-    public Double getMinStorage() {
-        return minStorage;
+    public Double getEstoqueMin() {
+        return estoqueMin;
     }
 
-    public void setMinStorage(Double minStorage) {
-        this.minStorage = minStorage;
+    public void setEstoqueMin(Double estoqueMin) {
+        this.estoqueMin = estoqueMin;
     }
 }
