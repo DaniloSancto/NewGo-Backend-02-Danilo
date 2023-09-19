@@ -1,8 +1,5 @@
 package dev.danilosantos.application.dto;
 
-import java.util.Date;
-import java.util.UUID;
-
 public class ProductInsertDto {
     private String nome;
     private String descricao;
