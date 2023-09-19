@@ -6,60 +6,60 @@ import java.util.UUID;
 public class Product {
     private Long id;
     private UUID hash;
-    private String name;
-    private String description;
+    private String nome;
+    private String descricao;
     private String ean13;
-    private Double price;
-    private Double quantity;
-    private Double minStorage;
+    private Double preco;
+    private Double quantidade;
+    private Double estoqueMin;
     private Date dtCreate;
     private Date dtUpdate;
-    private Boolean active;
+    private Boolean lAtivo;
 
     public Product() {
     }
 
-    public Product(String description, Double price, Double quantity, Double minStorage) {
-        this.description = description;
-        this.price = price;
-        this.quantity = quantity;
-        this.minStorage = minStorage;
+    public Product(String descricao, Double preco, Double quantidade, Double estoqueMin) {
+        this.descricao = descricao;
+        this.preco = preco;
+        this.quantidade = quantidade;
+        this.estoqueMin = estoqueMin;
     }
 
-    public Product(String name, String description, String ean13, Double price, Double quantity, Double minStorage) {
-        this.name = name;
-        this.description = description;
+    public Product(String nome, String descricao, String ean13, Double preco, Double quantidade, Double estoqueMin) {
+        this.nome = nome;
+        this.descricao = descricao;
         this.ean13 = ean13;
-        this.price = price;
-        this.quantity = quantity;
-        this.minStorage = minStorage;
+        this.preco = preco;
+        this.quantidade = quantidade;
+        this.estoqueMin = estoqueMin;
     }
 
-    public Product(Long id, UUID hash, String name, String description, String ean13, Double price, Double quantity, Double minStorage, Date dtCreate, Date dtUpdate, Boolean active) {
+    public Product(Long id, UUID hash, String nome, String descricao, String ean13, Double preco, Double quantidade, Double estoqueMin, Date dtCreate, Date dtUpdate, Boolean lAtivo) {
         this.id = id;
         this.hash = hash;
-        this.name = name;
-        this.description = description;
+        this.nome = nome;
+        this.descricao = descricao;
         this.ean13 = ean13;
-        this.price = price;
-        this.quantity = quantity;
-        this.minStorage = minStorage;
+        this.preco = preco;
+        this.quantidade = quantidade;
+        this.estoqueMin = estoqueMin;
         this.dtCreate = dtCreate;
         this.dtUpdate = dtUpdate;
-        this.active = active;
+        this.lAtivo = lAtivo;
     }
 
-    public Product(UUID hash, String name, String description, String ean13, Double price, Double quantity, Double minStorage, Date dtCreate, Date dtUpdate, Boolean active) {
+    public Product(UUID hash, String nome, String descricao, String ean13, Double preco, Double quantidade, Double estoqueMin, Date dtCreate, Date dtUpdate, Boolean lAtivo) {
         this.hash = hash;
-        this.name = name;
-        this.description = description;
+        this.nome = nome;
+        this.descricao = descricao;
         this.ean13 = ean13;
-        this.price = price;
-        this.quantity = quantity;
-        this.minStorage = minStorage;
+        this.preco = preco;
+        this.quantidade = quantidade;
+        this.estoqueMin = estoqueMin;
         this.dtCreate = dtCreate;
         this.dtUpdate = dtUpdate;
-        this.active = active;
+        this.lAtivo = lAtivo;
     }
 
     public Long getId() {
@@ -78,20 +78,20 @@ public class Product {
         this.hash = hash;
     }
 
-    public String getName() {
-        return name;
+    public String getNome() {
+        return nome;
     }
 
-    public void setName(String name) {
-        this.name = name;
+    public void setNome(String nome) {
+        this.nome = nome;
     }
 
-    public String getDescription() {
-        return description;
+    public String getDescricao() {
+        return descricao;
     }
 
-    public void setDescription(String description) {
-        this.description = description;
+    public void setDescricao(String descricao) {
+        this.descricao = descricao;
     }
 
     public String getEan13() {
@@ -102,28 +102,28 @@ public class Product {
         this.ean13 = ean13;
     }
 
-    public Double getPrice() {
-        return price;
+    public Double getPreco() {
+        return preco;
     }
 
-    public void setPrice(Double price) {
-        this.price = price;
+    public void setPreco(Double preco) {
+        this.preco = preco;
     }
 
-    public Double getQuantity() {
-        return quantity;
+    public Double getQuantidade() {
+        return quantidade;
     }
 
-    public void setQuantity(Double quantity) {
-        this.quantity = quantity;
+    public void setQuantidade(Double quantidade) {
+        this.quantidade = quantidade;
     }
 
-    public Double getMinStorage() {
-        return minStorage;
+    public Double getEstoqueMin() {
+        return estoqueMin;
     }
 
-    public void setMinStorage(Double minStorage) {
-        this.minStorage = minStorage;
+    public void setEstoqueMin(Double estoqueMin) {
+        this.estoqueMin = estoqueMin;
     }
 
     public Date getDtCreate() { return dtCreate; }
@@ -140,12 +140,12 @@ public class Product {
         this.dtUpdate = dtUpdate;
     }
 
-    public Boolean getActive() {
-        return active;
+    public Boolean getLAtivo() {
+        return lAtivo;
     }
 
-    public void setActive(Boolean active) {
-        this.active = active;
+    public void setLAtivo(Boolean lAtivo) {
+        this.lAtivo = lAtivo;
     }
 
     @Override
@@ -153,15 +153,15 @@ public class Product {
         return "Product{" +
                 "id=" + id +
                 ", hash=" + hash +
-                ", name='" + name + '\'' +
-                ", description='" + description + '\'' +
+                ", nome='" + nome + '\'' +
+                ", descricao='" + descricao + '\'' +
                 ", ean13='" + ean13 + '\'' +
-                ", price=" + price +
-                ", quantity=" + quantity +
-                ", minStorage=" + minStorage +
+                ", preco=" + preco +
+                ", quantidade=" + quantidade +
+                ", estoqueMin=" + estoqueMin +
                 ", dtCreate=" + dtCreate +
                 ", dtUpdate=" + dtUpdate +
-                ", active=" + active +
+                ", lAtivo=" + lAtivo +
                 '}';
     }
 }

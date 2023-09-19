@@ -7,7 +7,6 @@ import dev.danilosantos.domain.exception.BaseException;
 import dev.danilosantos.domain.exception.JsonError;
 import dev.danilosantos.application.dto.ProductInsertDto;
 import dev.danilosantos.application.dto.ProductUpdateDto;
-import dev.danilosantos.infrastructure.entities.Product;
 
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
@@ -41,6 +40,9 @@ public class ProductServlet extends HttpServlet {
         } catch (BaseException e) {
             response.getWriter().write(gson.toJson(new JsonError(e.getMessage())));
             response.setStatus(400);
+        } catch (Exception e) {
+            response.getWriter().write(gson.toJson(new JsonError(e.getMessage())));
+            response.setStatus(406);
         }
     }
 
@@ -68,6 +70,9 @@ public class ProductServlet extends HttpServlet {
         } catch (BaseException e) {
             response.getWriter().write(gson.toJson(new JsonError(e.getMessage())));
             response.setStatus(400);
+        } catch (Exception e) {
+            response.getWriter().write(gson.toJson(new JsonError(e.getMessage())));
+            response.setStatus(406);
         }
     }
 
