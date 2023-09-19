@@ -1,50 +1,50 @@
 package dev.danilosantos.application.dto;
 
 public class ProductUpdateDto {
-    private String description;
-    private Double price;
-    private Double quantity;
-    private Double minStorage;
+    private String descricao;
+    private Double preco;
+    private Double quantidade;
+    private Double estoqueMin;
 
     public ProductUpdateDto() {
     }
 
-    public ProductUpdateDto(String description, Double price, Double quantity, Double minStorage) {
-        this.description = description;
-        this.price = price;
-        this.quantity = quantity;
-        this.minStorage = minStorage;
+    public ProductUpdateDto(String descricao, Double preco, Double quantidade, Double estoqueMin) {
+        this.descricao = descricao;
+        this.preco = preco;
+        this.quantidade = quantidade;
+        this.estoqueMin = estoqueMin;
     }
 
-    public String getDescription() {
-        return description;
+    public String getDescricao() {
+        return descricao;
     }
 
-    public void setDescription(String description) {
-        this.description = description;
+    public void setDescricao(String descricao) {
+        this.descricao = descricao;
     }
 
-    public Double getPrice() {
-        return price;
+    public Double getPreco() {
+        return preco;
     }
 
-    public void setPrice(Double price) {
-        this.price = price;
+    public void setPreco(Double preco) {
+        this.preco = preco;
     }
 
-    public Double getQuantity() {
-        return quantity;
+    public Double getQuantidade() {
+        return quantidade;
     }
 
-    public void setQuantity(Double quantity) {
-        this.quantity = quantity;
+    public void setQuantidade(Double quantidade) {
+        this.quantidade = quantidade;
     }
 
-    public Double getMinStorage() {
-        return minStorage;
+    public Double getEstoqueMin() {
+        return estoqueMin;
     }
 
-    public void setMinStorage(Double minStorage) {
-        this.minStorage = minStorage;
+    public void setEstoqueMin(Double estoqueMin) {
+        this.estoqueMin = estoqueMin;
     }
 }

@@ -19,14 +19,14 @@ public class ProductService {
     }
 
     public void insert(ProductInsertDto dto) {
-        verifyIfNameAreNull(dto.getName());
+        verifyIfNameAreNull(dto.getNome());
 
         Product product = insertDtoToEntity(dto);
 
-        verifyIfNameOrEan13AreInUse(product.getName(), product.getEan13());
+        verifyIfNameOrEan13AreInUse(product.getNome(), product.getEan13());
 
         verifyNullValues(product);
-        verifyNegativeValues(product.getPrice(), product.getQuantity(), product.getMinStorage());
+        verifyNegativeValues(product.getPreco(), product.getQuantidade(), product.getEstoqueMin());
         dao.insert(product);
     }
 
@@ -39,7 +39,7 @@ public class ProductService {
 
             Product product = updateDtoToEntity(dto, baseProduct);
             verifyNullValues(product);
-            verifyNegativeValues(product.getPrice(), product.getQuantity(), product.getMinStorage());
+            verifyNegativeValues(product.getPreco(), product.getQuantidade(), product.getEstoqueMin());
             dao.updateByHash(hash, product);
         }
                 catch (IllegalArgumentException e) {
@@ -87,7 +87,7 @@ public class ProductService {
 
     private void verifyIfNameOrEan13AreInUse(String name, String ean13) {
         if (dao.findByName(name) != null &&
-                name.equalsIgnoreCase(dao.findByName(name).getName())) {
+                name.equalsIgnoreCase(dao.findByName(name).getNome())) {
             throw new BaseException("nome do produto ja cadastrado");
         }
 
@@ -110,14 +110,14 @@ public class ProductService {
     }
 
     private void verifyNullValues(Product product) {
-        if (product.getPrice() == null) {
-            product.setPrice(0.0);
+        if (product.getPreco() == null) {
+            product.setPreco(0.0);
         }
-        if (product.getQuantity() == null) {
-            product.setQuantity(0.0);
+        if (product.getQuantidade() == null) {
+            product.setQuantidade(0.0);
         }
-        if (product.getMinStorage() == null) {
-            product.setMinStorage(0.0);
+        if (product.getEstoqueMin() == null) {
+            product.setEstoqueMin(0.0);
         }
     }
 
@@ -126,7 +126,7 @@ public class ProductService {
             throw new BaseException("produto nao encontrado");
         }
 
-        if(!product.getActive()) {
+        if(!product.getLAtivo()) {
             throw new BaseException("produto inativo nao pode ser atualizado");
         }
     }
@@ -135,46 +135,46 @@ public class ProductService {
         return new Product(
                 product.getId(),
                 product.getHash(),
-                product.getName(),
-                verifyIfDescriptionAreNull(dto.getDescription(), product),
+                product.getNome(),
+                verifyIfDescriptionAreNull(dto.getDescricao(), product),
                 product.getEan13(),
-                verifyIfPriceAreNull(dto.getPrice(), product),
-                verifyIfQuantityAreNull(dto.getQuantity(), product),
-                verifyIfMinStorageAreNull(dto.getMinStorage(), product),
+                verifyIfPriceAreNull(dto.getPreco(), product),
+                verifyIfQuantityAreNull(dto.getQuantidade(), product),
+                verifyIfMinStorageAreNull(dto.getEstoqueMin(), product),
                 product.getDtCreate(),
                 new Date(),
-                product.getActive());
+                product.getLAtivo());
     }
 
     private String verifyIfDescriptionAreNull(String description, Product product) {
-        if(description == null) return product.getDescription();
+        if(description == null) return product.getDescricao();
         return description;
     }
 
     private Double verifyIfPriceAreNull(Double price, Product product) {
-        if(price == null) return product.getPrice();
+        if(price == null) return product.getPreco();
         return price;
     }
 
     private Double verifyIfQuantityAreNull(Double quantity, Product product) {
-        if(quantity == null) return product.getQuantity();
+        if(quantity == null) return product.getQuantidade();
         return quantity;
     }
 
     private Double verifyIfMinStorageAreNull(Double minStorage, Product product) {
-        if(minStorage == null) return product.getMinStorage();
+        if(minStorage == null) return product.getEstoqueMin();
         return minStorage;
     }
 
     private Product insertDtoToEntity(ProductInsertDto dto) {
         return new Product(
                 generateUniqueHash(),
-                dto.getName(),
-                dto.getDescription(),
+                dto.getNome(),
+                dto.getDescricao(),
                 dto.getEan13(),
-                dto.getPrice(),
-                dto.getQuantity(),
-                dto.getMinStorage(),
+                dto.getPreco(),
+                dto.getQuantidade(),
+                dto.getEstoqueMin(),
                 new Date(),
                 null,
                 false);
