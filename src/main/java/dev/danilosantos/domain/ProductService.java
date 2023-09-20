@@ -1,5 +1,6 @@
 package dev.danilosantos.domain;
 
+import dev.danilosantos.application.dto.ChangeLAtivoDto;
 import dev.danilosantos.application.dto.ProductInsertDto;
 import dev.danilosantos.application.dto.ProductUpdateDto;
 import dev.danilosantos.domain.exception.BaseException;
@@ -75,8 +76,24 @@ public class ProductService {
         }
     }
 
-    public void changeToActiveByHash(String hashStr) {
-        dao.changeToActiveByHash(UUID.fromString(hashStr));
+    public ChangeLAtivoDto changeLAtivoByHash(String hashStr) {
+        try {
+            Product product = dao.findByHash(UUID.fromString(hashStr));
+
+            if (product == null) {
+                throw new BaseException("produto nao encontrado");
+            }
+
+            if(!product.getLAtivo()) {
+                dao.changeLAtivoToTrue(UUID.fromString(hashStr));
+            } else {
+                dao.changeLAtivoToFalse(UUID.fromString(hashStr));
+            }
+            return new ChangeLAtivoDto(product.getHash(), product.getNome(), !product.getLAtivo());
+        }
+            catch (IllegalArgumentException e) {
+            throw new BaseException(e.getMessage());
+        }
     }
 
     private void verifyIfNameAreNull(String name) {
