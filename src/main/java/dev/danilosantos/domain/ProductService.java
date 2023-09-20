@@ -75,8 +75,15 @@ public class ProductService {
         }
     }
 
-    public void changeToActiveByHash(String hashStr) {
-        dao.changeToActiveByHash(UUID.fromString(hashStr));
+    public void changeLAtivoByHash(String hashStr) {
+        Product product = dao.findByHash(UUID.fromString(hashStr));
+
+        if(!product.getLAtivo()) {
+            dao.changeLAtivoToTrue(UUID.fromString(hashStr));
+        } else {
+            dao.changeLAtivoToFalse(UUID.fromString(hashStr));
+        }
+
     }
 
     private void verifyIfNameAreNull(String name) {
