@@ -116,6 +116,11 @@ public class ProductService {
         return dao.findAllActiveProducts();
     }
 
+
+    public List<Product> findAllInactiveProducts() {
+        return dao.findAllInactiveProducts();
+    }
+
     private void verifyIfNameAreNull(String name) {
         if(name == null || name.trim().isEmpty()) {
             throw new BaseException("nome do produto nao pode ser nulo ou vazio");

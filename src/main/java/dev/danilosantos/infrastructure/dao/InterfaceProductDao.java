@@ -30,4 +30,6 @@ public interface InterfaceProductDao {
     List<Product> findAllActiveProducts();
 
     Product findActiveProduct(UUID param);
+
+    List<Product> findAllInactiveProducts();
 }
