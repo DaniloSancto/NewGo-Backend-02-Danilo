@@ -2,8 +2,6 @@ package dev.danilosantos.application;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
-import dev.danilosantos.application.dto.ProductInsertDto;
-import dev.danilosantos.application.dto.ProductUpdateDto;
 import dev.danilosantos.domain.ProductService;
 import dev.danilosantos.domain.exception.BaseException;
 import dev.danilosantos.domain.exception.JsonError;
@@ -13,7 +11,6 @@ import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import java.io.BufferedReader;
 import java.io.IOException;
 
 @WebServlet("/products/lativo/*")
