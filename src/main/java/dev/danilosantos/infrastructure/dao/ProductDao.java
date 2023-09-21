@@ -208,6 +208,13 @@ public class ProductDao implements InterfaceProductDao {
         return findAllProducts(sql);
     }
 
+    @Override
+    public List<Product> findAllInactiveProducts() {
+        String sql = "SELECT * FROM produtos " +
+                "WHERE lativo = false";
+        return findAllProducts(sql);
+    }
+
     private List<Product> findAllProducts(String sql) {
         PreparedStatement statement;
         try {
