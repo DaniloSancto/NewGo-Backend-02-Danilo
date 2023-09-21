@@ -96,6 +96,26 @@ public class ProductService {
         }
     }
 
+    public Product findActiveProduct(String hashStr) {
+        try {
+            if(dao.findByHash(UUID.fromString(hashStr)) == null) {
+                throw new BaseException("produto nao encontrado");
+            }
+            if(dao.findActiveProduct(UUID.fromString(hashStr)) == null) {
+                throw new BaseException("produto inativo");
+            }
+            return dao.findActiveProduct(UUID.fromString(hashStr));
+
+        }
+        catch (IllegalArgumentException e) {
+            throw new BaseException(e.getMessage());
+        }
+    }
+
+    public List<Product> findAllActiveProducts() {
+        return dao.findAllActiveProducts();
+    }
+
     private void verifyIfNameAreNull(String name) {
         if(name == null || name.trim().isEmpty()) {
             throw new BaseException("nome do produto nao pode ser nulo ou vazio");
