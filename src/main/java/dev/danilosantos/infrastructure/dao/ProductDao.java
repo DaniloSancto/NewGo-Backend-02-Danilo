@@ -80,35 +80,7 @@ public class ProductDao implements InterfaceProductDao {
     @Override
     public List<Product> findAll() {
         String sql = "SELECT * FROM produtos";
-        PreparedStatement statement;
-        try {
-            statement = connection.prepareStatement(sql);
-            ResultSet rs = statement.executeQuery();
-
-            List<Product> list = new ArrayList<>();
-            while (rs.next()) {
-                Product product = new Product(
-                        rs.getLong("id"),
-                        UUID.fromString(rs.getString("hash")),
-                        rs.getString("nome"),
-                        rs.getString("descricao"),
-                        rs.getString("ean13"),
-                        rs.getDouble("preco"),
-                        rs.getDouble("quantidade"),
-                        rs.getDouble("estoque_min"),
-                        rs.getTimestamp("dtcreate"),
-                        rs.getTimestamp("dtupdate"),
-                        rs.getBoolean("lativo")
-                );
-                list.add(product);
-            }
-            statement.close();
-            rs.close();
-            return list;
-        }
-        catch (SQLException ex) {
-            throw new RuntimeException(ex);
-        }
+        return findAllProducts(sql);
     }
 
     public Product findByHash(UUID param) {
@@ -208,6 +180,60 @@ public class ProductDao implements InterfaceProductDao {
 
             statement.executeUpdate();
             statement.close();
+        }
+        catch (SQLException ex) {
+            throw new RuntimeException(ex);
+        }
+    }
+
+    public Product findActiveProduct(UUID param) {
+        String sql = "SELECT * FROM produtos WHERE hash = ? AND lativo = true";
+        PreparedStatement statement;
+        try {
+            statement = connection.prepareStatement(sql);
+            statement.setObject(1, param);
+            ResultSet rs = statement.executeQuery();
+
+            return getProduct(statement, rs);
+        }
+        catch (SQLException ex) {
+            throw new RuntimeException(ex);
+        }
+    }
+
+    @Override
+    public List<Product> findAllActiveProducts() {
+        String sql = "SELECT * FROM produtos " +
+                     "WHERE lativo = true";
+        return findAllProducts(sql);
+    }
+
+    private List<Product> findAllProducts(String sql) {
+        PreparedStatement statement;
+        try {
+            statement = connection.prepareStatement(sql);
+            ResultSet rs = statement.executeQuery();
+
+            List<Product> list = new ArrayList<>();
+            while (rs.next()) {
+                Product product = new Product(
+                        rs.getLong("id"),
+                        UUID.fromString(rs.getString("hash")),
+                        rs.getString("nome"),
+                        rs.getString("descricao"),
+                        rs.getString("ean13"),
+                        rs.getDouble("preco"),
+                        rs.getDouble("quantidade"),
+                        rs.getDouble("estoque_min"),
+                        rs.getTimestamp("dtcreate"),
+                        rs.getTimestamp("dtupdate"),
+                        rs.getBoolean("lativo")
+                );
+                list.add(product);
+            }
+            statement.close();
+            rs.close();
+            return list;
         }
         catch (SQLException ex) {
             throw new RuntimeException(ex);
