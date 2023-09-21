@@ -26,4 +26,8 @@ public interface InterfaceProductDao {
     void changeLAtivoToTrue(UUID hash);
 
     void changeLAtivoToFalse(UUID hash);
+
+    List<Product> findAllActiveProducts();
+
+    Product findActiveProduct(UUID param);
 }
