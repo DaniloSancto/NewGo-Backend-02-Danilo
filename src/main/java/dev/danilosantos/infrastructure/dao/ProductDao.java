@@ -215,6 +215,13 @@ public class ProductDao implements InterfaceProductDao {
         return findAllProducts(sql);
     }
 
+    @Override
+    public List<Product> findAllQuantityLowerStorageProducts() {
+        String sql = "SELECT * FROM produtos " +
+                "WHERE quantidade < estoque_min";
+        return findAllProducts(sql);
+    }
+
     private List<Product> findAllProducts(String sql) {
         PreparedStatement statement;
         try {
