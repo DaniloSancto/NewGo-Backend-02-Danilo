@@ -32,4 +32,6 @@ public interface InterfaceProductDao {
     Product findActiveProduct(UUID param);
 
     List<Product> findAllInactiveProducts();
+
+    List<Product> findAllQuantityLowerStorageProducts();
 }
