@@ -121,6 +121,10 @@ public class ProductService {
         return dao.findAllInactiveProducts();
     }
 
+    public List<Product> findAllQuantityLessThanMinStorageProducts() {
+        return dao.findAllQuantityLowerStorageProducts();
+    }
+
     private void verifyIfNameAreNull(String name) {
         if(name == null || name.trim().isEmpty()) {
             throw new BaseException("nome do produto nao pode ser nulo ou vazio");
