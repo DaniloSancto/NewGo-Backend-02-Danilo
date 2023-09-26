@@ -5,6 +5,7 @@ import dev.danilosantos.application.dto.ProductInsertDto;
 import dev.danilosantos.application.dto.ProductUpdateDto;
 import dev.danilosantos.domain.exception.BaseException;
 import dev.danilosantos.domain.mapper.ProductMapper;
+import dev.danilosantos.domain.strings.ExceptionMessages;
 import dev.danilosantos.infrastructure.entities.Product;
 import dev.danilosantos.infrastructure.dao.InterfaceProductDao;
 import dev.danilosantos.infrastructure.dao.ProductDao;
@@ -94,7 +95,7 @@ public class ProductService {
         try {
             verifyIfProductExists(UUID.fromString(hashStr));
             if(dao.findActiveProduct(UUID.fromString(hashStr)) == null) {
-                throw new BaseException("produto inativo");
+                throw new BaseException(ExceptionMessages.PRODUCT_INACTIVE.getMessage());
             }
             return dao.findActiveProduct(UUID.fromString(hashStr));
         }
@@ -118,24 +119,24 @@ public class ProductService {
 
     private void verifyIfProductExists(UUID hash) {
         if(dao.findByHash(hash) == null) {
-            throw new BaseException("produto nao encontrado");
+            throw new BaseException(ExceptionMessages.PRODUCT_NOT_FIND.getMessage());
         }
     }
 
     private void verifyName(String name) {
         if(name == null || name.trim().isEmpty()) {
-            throw new BaseException("nome do produto nao pode ser nulo ou vazio");
+            throw new BaseException(ExceptionMessages.NAME_CANNOT_BE_NULL_OR_EMPTY.getMessage());
         }
         if (dao.findByName(name) != null &&
                 name.equalsIgnoreCase(dao.findByName(name).getNome())) {
-            throw new BaseException("nome do produto ja cadastrado");
+            throw new BaseException(ExceptionMessages.NAME_ALREADY_REGISTERED.getMessage());
         }
     }
 
     private void verifyEan13(String ean13) {
         if (dao.findByEan13(ean13) != null &&
                 ean13.equalsIgnoreCase(dao.findByEan13(ean13).getEan13())) {
-            throw new BaseException("ean13 do produto ja cadastrado");
+            throw new BaseException(ExceptionMessages.EAN13_ALREADY_REGISTERED.getMessage());
         }
     }
 
@@ -146,13 +147,13 @@ public class ProductService {
 
     private void verifyNegativeValues(Product product) {
         if (product.getPreco() < 0) {
-            throw new BaseException("preco nao pode ser um valor negativo");
+            throw new BaseException(ExceptionMessages.PRICE_CANNOT_BE_NEGATIVE.getMessage());
         }
         else if (product.getQuantidade() < 0) {
-            throw new BaseException("quantidade nao pode ser um valor negativo");
+            throw new BaseException(ExceptionMessages.QUANTITY_CANNOT_BE_NEGATIVE.getMessage());
         }
         else if (product.getEstoqueMin() < 0) {
-            throw new BaseException("estoque_min nao pode ser um valor negativo");
+            throw new BaseException(ExceptionMessages.STORAGE_CANNOT_BE_NEGATIVE.getMessage());
         }
     }
 
@@ -170,10 +171,10 @@ public class ProductService {
 
     private void updateVerifications(Product baseProduct) {
         if(baseProduct == null) {
-            throw new BaseException("produto nao encontrado");
+            throw new BaseException(ExceptionMessages.PRODUCT_NOT_FIND.getMessage());
         }
         if(!baseProduct.getLAtivo()) {
-            throw new BaseException("produto inativo nao pode ser atualizado");
+            throw new BaseException(ExceptionMessages.INACTIVE_PRODUCT_CANNOT_BE_UPDATED.getMessage());
         }
     }
 
