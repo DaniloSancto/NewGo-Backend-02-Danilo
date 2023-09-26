@@ -141,8 +141,8 @@ public class ProductService {
     }
 
     private void verifyNumbers(Product product) {
-        verifyNegativeValues(product);
         verifyNullValues(product);
+        verifyNegativeValues(product);
     }
 
     private void verifyNegativeValues(Product product) {
