@@ -4,6 +4,7 @@ import dev.danilosantos.application.dto.ChangeLAtivoDto;
 import dev.danilosantos.application.dto.ProductInsertDto;
 import dev.danilosantos.application.dto.ProductUpdateDto;
 import dev.danilosantos.domain.exception.BaseException;
+import dev.danilosantos.domain.mapper.ProductMapper;
 import dev.danilosantos.infrastructure.entities.Product;
 import dev.danilosantos.infrastructure.dao.InterfaceProductDao;
 import dev.danilosantos.infrastructure.dao.ProductDao;
@@ -14,36 +15,36 @@ import java.util.UUID;
 
 public class ProductService {
     private final InterfaceProductDao dao;
+    private final ProductMapper mapper = new ProductMapper();
 
     public ProductService() {
         this.dao = new ProductDao();
     }
 
     public void insert(ProductInsertDto dto) {
-        verifyIfNameAreNull(dto.getNome());
+        verifyName(dto.getNome());
+        verifyEan13(dto.getEan13());
 
-        Product product = insertDtoToEntity(dto);
+        Product product = mapper.fromInsertDtoToProduct(dto, generateUniqueHash());
 
-        verifyIfNameOrEan13AreInUse(product.getNome(), product.getEan13());
-
-        verifyNullValues(product);
-        verifyNegativeValues(product.getPreco(), product.getQuantidade(), product.getEstoqueMin());
+        verifyNumbers(product);
         dao.insert(product);
     }
 
     public void updateByHash(String hashStr, ProductUpdateDto dto) {
         try {
             UUID hash = UUID.fromString(hashStr);
-            Product baseProduct = dao.findByHash(hash);
 
+            Product baseProduct = dao.findByHash(hash);
             updateVerifications(baseProduct);
 
-            Product product = updateDtoToEntity(dto, baseProduct);
-            verifyNullValues(product);
-            verifyNegativeValues(product.getPreco(), product.getQuantidade(), product.getEstoqueMin());
+            Product product = mapper.fromUpdateDtoToProduct(dto, baseProduct);
+            verifyNumbers(product);
+
+            product.setDtUpdate(new Date());
             dao.updateByHash(hash, product);
         }
-                catch (IllegalArgumentException e) {
+        catch (IllegalArgumentException e) {
             throw new BaseException(e.getMessage());
         }
     }
@@ -54,11 +55,8 @@ public class ProductService {
 
     public Product findByHash(String hashStr) {
         try {
-            if(dao.findHash(UUID.fromString(hashStr)) == null) {
-                throw new BaseException("produto nao encontrado");
-            }
+            verifyIfProductExists(UUID.fromString(hashStr));
             return dao.findByHash(UUID.fromString(hashStr));
-
         }
         catch (IllegalArgumentException e) {
             throw new BaseException(e.getMessage());
@@ -67,23 +65,19 @@ public class ProductService {
 
     public void deleteByHash(String hashStr) {
         try {
-            if(!dao.deleteByHash(UUID.fromString(hashStr))) {
-                throw new BaseException("produto nao encontrado");
-            }
+            verifyIfProductExists(UUID.fromString(hashStr));
+            dao.deleteByHash(UUID.fromString(hashStr));
         }
         catch (IllegalArgumentException e) {
             throw new BaseException(e.getMessage());
         }
     }
 
+    // alterar
     public ChangeLAtivoDto changeLAtivoByHash(String hashStr) {
         try {
             Product product = dao.findByHash(UUID.fromString(hashStr));
-
-            if (product == null) {
-                throw new BaseException("produto nao encontrado");
-            }
-
+            verifyIfProductExists(UUID.fromString(hashStr));
             if(!product.getLAtivo()) {
                 dao.changeLAtivoToTrue(UUID.fromString(hashStr));
             } else {
@@ -91,21 +85,18 @@ public class ProductService {
             }
             return new ChangeLAtivoDto(product.getHash(), product.getNome(), !product.getLAtivo());
         }
-            catch (IllegalArgumentException e) {
+        catch (IllegalArgumentException e) {
             throw new BaseException(e.getMessage());
         }
     }
 
     public Product findActiveProduct(String hashStr) {
         try {
-            if(dao.findByHash(UUID.fromString(hashStr)) == null) {
-                throw new BaseException("produto nao encontrado");
-            }
+            verifyIfProductExists(UUID.fromString(hashStr));
             if(dao.findActiveProduct(UUID.fromString(hashStr)) == null) {
                 throw new BaseException("produto inativo");
             }
             return dao.findActiveProduct(UUID.fromString(hashStr));
-
         }
         catch (IllegalArgumentException e) {
             throw new BaseException(e.getMessage());
@@ -125,33 +116,43 @@ public class ProductService {
         return dao.findAllQuantityLowerStorageProducts();
     }
 
-    private void verifyIfNameAreNull(String name) {
-        if(name == null || name.trim().isEmpty()) {
-            throw new BaseException("nome do produto nao pode ser nulo ou vazio");
+    private void verifyIfProductExists(UUID hash) {
+        if(dao.findByHash(hash) == null) {
+            throw new BaseException("produto nao encontrado");
         }
     }
 
-    private void verifyIfNameOrEan13AreInUse(String name, String ean13) {
+    private void verifyName(String name) {
+        if(name == null || name.trim().isEmpty()) {
+            throw new BaseException("nome do produto nao pode ser nulo ou vazio");
+        }
         if (dao.findByName(name) != null &&
                 name.equalsIgnoreCase(dao.findByName(name).getNome())) {
             throw new BaseException("nome do produto ja cadastrado");
         }
+    }
 
+    private void verifyEan13(String ean13) {
         if (dao.findByEan13(ean13) != null &&
                 ean13.equalsIgnoreCase(dao.findByEan13(ean13).getEan13())) {
             throw new BaseException("ean13 do produto ja cadastrado");
         }
     }
 
-    private void verifyNegativeValues(Double price, Double quantity, Double minStorage) {
-        if (price < 0) {
+    private void verifyNumbers(Product product) {
+        verifyNegativeValues(product);
+        verifyNullValues(product);
+    }
+
+    private void verifyNegativeValues(Product product) {
+        if (product.getPreco() < 0) {
             throw new BaseException("preco nao pode ser um valor negativo");
         }
-        else if (quantity < 0) {
+        else if (product.getQuantidade() < 0) {
             throw new BaseException("quantidade nao pode ser um valor negativo");
         }
-        else if (minStorage < 0) {
-            throw new BaseException("estoque_minimo nao pode ser um valor negativo");
+        else if (product.getEstoqueMin() < 0) {
+            throw new BaseException("estoque_min nao pode ser um valor negativo");
         }
     }
 
@@ -167,63 +168,13 @@ public class ProductService {
         }
     }
 
-    private void updateVerifications(Product product) {
-        if(product == null) {
+    private void updateVerifications(Product baseProduct) {
+        if(baseProduct == null) {
             throw new BaseException("produto nao encontrado");
         }
-
-        if(!product.getLAtivo()) {
+        if(!baseProduct.getLAtivo()) {
             throw new BaseException("produto inativo nao pode ser atualizado");
         }
-    }
-
-    private Product updateDtoToEntity(ProductUpdateDto dto, Product product) {
-        return new Product(
-                product.getId(),
-                product.getHash(),
-                product.getNome(),
-                verifyIfDescriptionAreNull(dto.getDescricao(), product),
-                product.getEan13(),
-                verifyIfPriceAreNull(dto.getPreco(), product),
-                verifyIfQuantityAreNull(dto.getQuantidade(), product),
-                verifyIfMinStorageAreNull(dto.getEstoqueMin(), product),
-                product.getDtCreate(),
-                new Date(),
-                product.getLAtivo());
-    }
-
-    private String verifyIfDescriptionAreNull(String description, Product product) {
-        if(description == null) return product.getDescricao();
-        return description;
-    }
-
-    private Double verifyIfPriceAreNull(Double price, Product product) {
-        if(price == null) return product.getPreco();
-        return price;
-    }
-
-    private Double verifyIfQuantityAreNull(Double quantity, Product product) {
-        if(quantity == null) return product.getQuantidade();
-        return quantity;
-    }
-
-    private Double verifyIfMinStorageAreNull(Double minStorage, Product product) {
-        if(minStorage == null) return product.getEstoqueMin();
-        return minStorage;
-    }
-
-    private Product insertDtoToEntity(ProductInsertDto dto) {
-        return new Product(
-                generateUniqueHash(),
-                dto.getNome(),
-                dto.getDescricao(),
-                dto.getEan13(),
-                dto.getPreco(),
-                dto.getQuantidade(),
-                dto.getEstoqueMin(),
-                new Date(),
-                null,
-                false);
     }
 
     private UUID generateUniqueHash() {
