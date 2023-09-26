@@ -34,7 +34,7 @@ public class ProductMapper {
                 verifyIfQuantityAreNull(dto.getQuantidade(), product),
                 verifyIfMinStorageAreNull(dto.getEstoqueMin(), product),
                 product.getDtCreate(),
-                new Date(),
+                product.getDtUpdate(),
                 product.getLAtivo());
     }
 
