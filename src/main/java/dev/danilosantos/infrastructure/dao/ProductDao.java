@@ -79,36 +79,21 @@ public class ProductDao implements InterfaceProductDao {
 
     @Override
     public List<Product> findAll() {
-        String sql = "SELECT * FROM produtos";
-        return findAllProducts(sql);
+        return getListOfProductFromDb("");
     }
 
     public Product findByHash(UUID param) {
-        String sql = "SELECT * FROM produtos WHERE hash = ?";
-        PreparedStatement statement;
-        try {
-            statement = connection.prepareStatement(sql);
-            statement.setObject(1, param);
-            ResultSet rs = statement.executeQuery();
-
-            return getProduct(statement, rs);
-        }
-        catch (SQLException ex) {
-            throw new RuntimeException(ex);
-        }
+        return getOneProductFromDb(param, "WHERE hash = ?");
     }
 
     @Override
-    public boolean deleteByHash(UUID hash) {
+    public void deleteByHash(UUID hash) {
         String sql = "DELETE FROM produtos WHERE hash = ?";
         try {
             PreparedStatement statement = connection.prepareStatement(sql);
             statement.setObject(1, hash);
-            if(statement.executeUpdate() != 0) {
-                return true;
-            }
+            statement.executeUpdate();
             statement.close();
-            return false;
         }
         catch (SQLException ex) {
             throw new RuntimeException(ex);
@@ -117,14 +102,12 @@ public class ProductDao implements InterfaceProductDao {
 
     @Override
     public Product findByName(String param) {
-        String sql = "SELECT * FROM produtos WHERE LOWER(nome) = LOWER(?)";
-        return getProductFromDb(param, sql);
+        return getOneProductFromDb(param, "WHERE LOWER(nome) = LOWER(?)");
     }
 
     @Override
     public Product findByEan13(String param) {
-        String sql = "SELECT * FROM produtos WHERE LOWER(ean13) = LOWER(?)";
-        return getProductFromDb(param, sql);
+        return getOneProductFromDb(param, "WHERE LOWER(ean13) = LOWER(?)");
     }
 
     @Override
@@ -149,80 +132,67 @@ public class ProductDao implements InterfaceProductDao {
     }
 
     public void changeLAtivoToTrue(UUID hash) {
-        try {
-            String sql =
-                    "UPDATE produtos " +
-                    "SET lativo = ?" +
-                    "WHERE hash = ?;";
-
-            PreparedStatement statement = connection.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS);
-            statement.setObject(2, hash, java.sql.Types.OTHER);
-            statement.setBoolean(1, true);
-
-            statement.executeUpdate();
-            statement.close();
-        }
-        catch (SQLException ex) {
-            throw new RuntimeException(ex);
-        }
+        updateLAtivoOnDb(hash, true);
     }
 
     public void changeLAtivoToFalse(UUID hash) {
-        try {
-            String sql =
-                    "UPDATE produtos " +
-                    "SET lativo = ?" +
-                    "WHERE hash = ?;";
-
-            PreparedStatement statement = connection.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS);
-            statement.setObject(2, hash, java.sql.Types.OTHER);
-            statement.setBoolean(1, false);
-
-            statement.executeUpdate();
-            statement.close();
-        }
-        catch (SQLException ex) {
-            throw new RuntimeException(ex);
-        }
+        updateLAtivoOnDb(hash, false);
     }
 
     public Product findActiveProduct(UUID param) {
-        String sql = "SELECT * FROM produtos WHERE hash = ? AND lativo = true";
+        return getOneProductFromDb(param, "WHERE hash = ? AND lativo = true");
+    }
+
+    @Override
+    public List<Product> findAllActiveProducts() {
+        return getListOfProductFromDb("WHERE lativo = true");
+    }
+
+    @Override
+    public List<Product> findAllInactiveProducts() {
+        return getListOfProductFromDb("WHERE lativo = false");
+    }
+
+    @Override
+    public List<Product> findAllQuantityLowerStorageProducts() {
+        return getListOfProductFromDb("WHERE quantidade < estoque_min");
+    }
+
+    private Product getOneProductFromDb(Object param, String condition) {
         PreparedStatement statement;
+        Product product = null;
+        String sql = "SELECT * FROM produtos " + condition;
         try {
             statement = connection.prepareStatement(sql);
             statement.setObject(1, param);
             ResultSet rs = statement.executeQuery();
 
-            return getProduct(statement, rs);
+            if (rs.next()) {
+            product = new Product(
+                    rs.getLong("id"),
+                    UUID.fromString(rs.getString("hash")),
+                    rs.getString("nome"),
+                    rs.getString("descricao"),
+                    rs.getString("ean13"),
+                    rs.getDouble("preco"),
+                    rs.getDouble("quantidade"),
+                    rs.getDouble("estoque_min"),
+                    rs.getTimestamp("dtcreate"),
+                    rs.getTimestamp("dtupdate"),
+                    rs.getBoolean("lativo")
+            );
+        }
+        statement.close();
+        rs.close();
+        return product;
         }
         catch (SQLException ex) {
             throw new RuntimeException(ex);
         }
     }
 
-    @Override
-    public List<Product> findAllActiveProducts() {
-        String sql = "SELECT * FROM produtos " +
-                     "WHERE lativo = true";
-        return findAllProducts(sql);
-    }
-
-    @Override
-    public List<Product> findAllInactiveProducts() {
-        String sql = "SELECT * FROM produtos " +
-                "WHERE lativo = false";
-        return findAllProducts(sql);
-    }
-
-    @Override
-    public List<Product> findAllQuantityLowerStorageProducts() {
-        String sql = "SELECT * FROM produtos " +
-                "WHERE quantidade < estoque_min";
-        return findAllProducts(sql);
-    }
-
-    private List<Product> findAllProducts(String sql) {
+    private List<Product> getListOfProductFromDb(String condition) {
+        String sql = "SELECT * FROM produtos " + condition;
         PreparedStatement statement;
         try {
             statement = connection.prepareStatement(sql);
@@ -254,40 +224,23 @@ public class ProductDao implements InterfaceProductDao {
         }
     }
 
-    private Product getProductFromDb(String param, String sql) {
-        PreparedStatement statement;
+    private void updateLAtivoOnDb(UUID hash, boolean condition) {
         try {
-            statement = connection.prepareStatement(sql);
-            statement.setString(1, param);
-            ResultSet rs = statement.executeQuery();
+            String sql =
+                    "UPDATE produtos " +
+                    "SET lativo = ?" +
+                    "WHERE hash = ?;";
 
-            return getProduct(statement, rs);
+            PreparedStatement statement = connection.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS);
+            statement.setObject(2, hash, java.sql.Types.OTHER);
+            statement.setBoolean(1, condition);
+
+            statement.executeUpdate();
+            statement.close();
         }
         catch (SQLException ex) {
             throw new RuntimeException(ex);
         }
-    }
-
-    private Product getProduct(PreparedStatement statement, ResultSet rs) throws SQLException {
-        Product product = null;
-        if (rs.next()) {
-            product = new Product(
-                    rs.getLong("id"),
-                    UUID.fromString(rs.getString("hash")),
-                    rs.getString("nome"),
-                    rs.getString("descricao"),
-                    rs.getString("ean13"),
-                    rs.getDouble("preco"),
-                    rs.getDouble("quantidade"),
-                    rs.getDouble("estoque_min"),
-                    rs.getTimestamp("dtcreate"),
-                    rs.getTimestamp("dtupdate"),
-                    rs.getBoolean("lativo")
-            );
-        }
-        statement.close();
-        rs.close();
-        return product;
     }
 
     private Timestamp getTimeStampOrNull(Date date) {

@@ -15,7 +15,7 @@ public interface InterfaceProductDao {
 
     Product findByHash(UUID hash);
 
-    boolean deleteByHash(UUID hash);
+    void deleteByHash(UUID hash);
 
     Product findByName(String param);
 
