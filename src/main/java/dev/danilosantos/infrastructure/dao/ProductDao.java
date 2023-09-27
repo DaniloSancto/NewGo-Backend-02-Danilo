@@ -87,16 +87,13 @@ public class ProductDao implements InterfaceProductDao {
     }
 
     @Override
-    public boolean deleteByHash(UUID hash) {
+    public void deleteByHash(UUID hash) {
         String sql = "DELETE FROM produtos WHERE hash = ?";
         try {
             PreparedStatement statement = connection.prepareStatement(sql);
             statement.setObject(1, hash);
-            if(statement.executeUpdate() != 0) {
-                return true;
-            }
+            statement.executeUpdate();
             statement.close();
-            return false;
         }
         catch (SQLException ex) {
             throw new RuntimeException(ex);
