@@ -21,47 +21,23 @@ public class ProductInsertDto {
         return nome;
     }
 
-    public void setNome(String nome) {
-        this.nome = nome;
-    }
-
     public String getDescricao() {
         return descricao;
-    }
-
-    public void setDescricao(String descricao) {
-        this.descricao = descricao;
     }
 
     public String getEan13() {
         return ean13;
     }
 
-    public void setEan13(String ean13) {
-        this.ean13 = ean13;
-    }
-
     public Double getPreco() {
         return preco;
-    }
-
-    public void setPreco(Double preco) {
-        this.preco = preco;
     }
 
     public Double getQuantidade() {
         return quantidade;
     }
 
-    public void setQuantidade(Double quantidade) {
-        this.quantidade = quantidade;
-    }
-
     public Double getEstoqueMin() {
         return estoqueMin;
-    }
-
-    public void setEstoqueMin(Double estoqueMin) {
-        this.estoqueMin = estoqueMin;
     }
 }

@@ -17,23 +17,11 @@ public class ChangeLAtivoDto {
         return hash;
     }
 
-    public void setHash(UUID hash) {
-        this.hash = hash;
-    }
-
     public String getNome() {
         return nome;
     }
 
-    public void setNome(String nome) {
-        this.nome = nome;
-    }
-
     public Boolean getlAtivo() {
         return lAtivo;
-    }
-
-    public void setlAtivo(Boolean lAtivo) {
-        this.lAtivo = lAtivo;
     }
 }

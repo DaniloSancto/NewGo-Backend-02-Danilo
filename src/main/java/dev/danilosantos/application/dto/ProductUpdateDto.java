@@ -20,31 +20,16 @@ public class ProductUpdateDto {
         return descricao;
     }
 
-    public void setDescricao(String descricao) {
-        this.descricao = descricao;
-    }
-
     public Double getPreco() {
         return preco;
-    }
-
-    public void setPreco(Double preco) {
-        this.preco = preco;
     }
 
     public Double getQuantidade() {
         return quantidade;
     }
 
-    public void setQuantidade(Double quantidade) {
-        this.quantidade = quantidade;
-    }
-
     public Double getEstoqueMin() {
         return estoqueMin;
     }
 
-    public void setEstoqueMin(Double estoqueMin) {
-        this.estoqueMin = estoqueMin;
-    }
 }

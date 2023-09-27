@@ -16,24 +16,7 @@ public class Product {
     private Date dtUpdate;
     private Boolean lAtivo;
 
-    public Product() {
-    }
-
-    public Product(String descricao, Double preco, Double quantidade, Double estoqueMin) {
-        this.descricao = descricao;
-        this.preco = preco;
-        this.quantidade = quantidade;
-        this.estoqueMin = estoqueMin;
-    }
-
-    public Product(String nome, String descricao, String ean13, Double preco, Double quantidade, Double estoqueMin) {
-        this.nome = nome;
-        this.descricao = descricao;
-        this.ean13 = ean13;
-        this.preco = preco;
-        this.quantidade = quantidade;
-        this.estoqueMin = estoqueMin;
-    }
+    public Product() {}
 
     public Product(Long id, UUID hash, String nome, String descricao, String ean13, Double preco, Double quantidade, Double estoqueMin, Date dtCreate, Date dtUpdate, Boolean lAtivo) {
         this.id = id;
