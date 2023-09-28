@@ -10,6 +10,7 @@ public enum ExceptionMessages {
     PRICE_CANNOT_BE_NEGATIVE("Preço não pode ser um valor negativo"),
     QUANTITY_CANNOT_BE_NEGATIVE("Quantidade não pode ser um valor negativo"),
     STORAGE_CANNOT_BE_NEGATIVE("EstoqueMin não pode ser um valor negativo"),
+    INVALID_URI("URI inválida"),
     ;
 
     private final String message;
