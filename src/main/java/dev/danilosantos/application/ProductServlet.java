@@ -101,7 +101,6 @@ public class ProductServlet extends HttpServlet {
         }
     }
 
-    // método doGet: chama o método findAll da camada de serviço retornando todos os produtos do banco de dados
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         response.setContentType("application/json");
@@ -110,16 +109,34 @@ public class ProductServlet extends HttpServlet {
         try {
             String requestURI = request.getRequestURI();
             String[] parts = requestURI.split("/");
-            if (parts.length == 3 && "products".equals(parts[1])) {
-                String hashStr = parts[2];
+            String param = request.getParameter("lativo");
 
+            if (parts.length == 4 && "active".equals(parts[3])) {
+                String hashStr = parts[2];
+                response.getWriter().write(gson.toJson(service.findActiveProduct(hashStr)));
+                response.setStatus(200);
+            }
+            else if (parts.length == 2 && param != null) {
+                boolean lAtivo = Boolean.parseBoolean(param);
+                if (lAtivo) {
+                    response.getWriter().write(gson.toJson(service.findAllActiveProducts()));
+                    response.setStatus(200);
+                } else {
+                    response.getWriter().write(gson.toJson(service.findAllInactiveProducts()));
+                    response.setStatus(200);
+                }
+            }
+            else if (parts.length == 3) {
+                String hashStr = parts[2];
                 response.getWriter().write(gson.toJson(service.findByHash(hashStr)));
                 response.setStatus(200);
             }
-            else if(parts.length == 2&& "products".equals(parts[1])) {
+            else {
                 response.getWriter().write(gson.toJson(service.findAll()));
+                response.setStatus(200);
             }
-        } catch (BaseException e) {
+        }
+        catch (BaseException e) {
             response.getWriter().write(gson.toJson(new JsonError(e.getMessage())));
             response.setStatus(400);
         }
