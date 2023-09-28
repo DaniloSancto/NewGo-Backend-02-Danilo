@@ -126,14 +126,23 @@ public class ProductServlet extends HttpServlet {
                     response.setStatus(200);
                 }
             }
-            else if (parts.length == 3) {
-                String hashStr = parts[2];
-                response.getWriter().write(gson.toJson(service.findByHash(hashStr)));
-                response.setStatus(200);
+            else if (request.getParameterMap().isEmpty()) {
+                if (parts.length == 3 && (parts[2].equals("quantity-less-than-min-storage"))) {
+                    response.getWriter().write(gson.toJson(service.findAllQuantityLessThanMinStorageProducts()));
+                    response.setStatus(200);
+                }
+                else if (parts.length == 3) {
+                    String hashStr = parts[2];
+                    response.getWriter().write(gson.toJson(service.findByHash(hashStr)));
+                    response.setStatus(200);
+                }
+                else if (parts.length == 2) {
+                    response.getWriter().write(gson.toJson(service.findAll()));
+                    response.setStatus(200);
+                }
             }
             else {
-                response.getWriter().write(gson.toJson(service.findAll()));
-                response.setStatus(200);
+                response.setStatus(505);
             }
         }
         catch (BaseException e) {
