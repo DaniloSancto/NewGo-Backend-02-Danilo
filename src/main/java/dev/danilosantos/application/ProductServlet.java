@@ -21,7 +21,6 @@ public class ProductServlet extends HttpServlet {
     private final ProductService service = new ProductService();
     private final Gson gson = new GsonBuilder().serializeNulls().create();
 
-    // método doPost: ele pega as informações no formato JSON da requisição transforma em objeto tipo Produto e manda para a camada de serviço
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         response.setContentType("application/json");
@@ -29,18 +28,44 @@ public class ProductServlet extends HttpServlet {
         response.setCharacterEncoding("UTF-8");
         try {
             BufferedReader reader = request.getReader();
-            StringBuilder json = new StringBuilder();
-            String line;
-            while ((line = reader.readLine()) != null) {
-                json.append(line.trim());
+
+            String requestURI = request.getRequestURI();
+            String[] parts = requestURI.split("/");
+
+            if (reader.ready()) {
+                StringBuilder json = new StringBuilder();
+                String line;
+                while ((line = reader.readLine()) != null) {
+                    json.append(line.trim());
+                }
+                ProductInsertDto productDto = gson.fromJson(json.toString(), ProductInsertDto.class);
+                service.insert(productDto);
+                response.setStatus(200);
             }
-            ProductInsertDto productDto = gson.fromJson(json.toString(), ProductInsertDto.class);
-            service.insert(productDto);
-            response.setStatus(200);
-        } catch (BaseException e) {
+            else if (parts.length == 4) {
+                if(parts[3].equals("activate")) {
+                    String productHashStr = parts[2];
+                    response.getWriter().write(gson.toJson(service.changeLAtivoToTrue(productHashStr)));
+                    response.setStatus(200);
+                }
+                else if (parts[3].equals("deactivate")) {
+                    String productHashStr = parts[2];
+                    response.getWriter().write(gson.toJson(service.changeLAtivoToFalse(productHashStr)));
+                    response.setStatus(200);
+                }
+                else {
+                    response.setStatus(505);
+                }
+            }
+            else {
+                response.setStatus(505);
+            }
+        }
+        catch (BaseException e) {
             response.getWriter().write(gson.toJson(new JsonError(e.getMessage())));
             response.setStatus(400);
-        } catch (Exception e) {
+        }
+        catch (Exception e) {
             response.getWriter().write(gson.toJson(new JsonError(e.getMessage())));
             response.setStatus(406);
         }
