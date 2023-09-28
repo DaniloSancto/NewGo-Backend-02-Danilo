@@ -55,6 +55,7 @@ public class ProductService {
 
     public Product findByHash(String hashStr) {
         try {
+            verifyURI(hashStr);
             verifyIfProductExists(UUID.fromString(hashStr));
             return dao.findByHash(UUID.fromString(hashStr));
         }
@@ -125,6 +126,12 @@ public class ProductService {
     private void verifyIfProductExists(UUID hash) {
         if(dao.findByHash(hash) == null) {
             throw new BaseException(ExceptionMessages.PRODUCT_NOT_FIND.getMessage());
+        }
+    }
+
+    private void verifyURI(String hashStr) {
+        if(hashStr.length() != 36) {
+            throw new BaseException(ExceptionMessages.INVALID_URI.getMessage());
         }
     }
 
