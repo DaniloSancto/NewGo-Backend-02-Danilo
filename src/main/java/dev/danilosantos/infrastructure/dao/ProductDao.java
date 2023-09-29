@@ -155,7 +155,7 @@ public class ProductDao implements InterfaceProductDao {
 
     @Override
     public List<Product> findAllQuantityLowerStorageProducts() {
-        return getListOfProductFromDb("WHERE quantidade < estoque_min");
+        return getListOfProductFromDb("WHERE quantidade < estoque_min AND lativo = true");
     }
 
     private Product getOneProductFromDb(Object param, String condition) {
