@@ -3,6 +3,7 @@ package dev.danilosantos.domain;
 import dev.danilosantos.application.dto.ProductInsertDto;
 import dev.danilosantos.application.dto.ProductUpdateDto;
 import dev.danilosantos.application.dto.ProductUpdatePriceBatchDto;
+import dev.danilosantos.application.dto.ProductUpdateQuantityBatchDto;
 import dev.danilosantos.domain.exception.BaseException;
 import dev.danilosantos.domain.mapper.ProductMapper;
 import dev.danilosantos.domain.strings.ExceptionMessages;
@@ -170,6 +171,45 @@ public class ProductService {
                     returnMessages.put("success - item " + (count + 1),"hash:'" + update.getHash() + "' " + "| preço atualizado");
 
                     dao.updateProductPrice(hash, newPrice);
+                }
+            }
+            catch (BaseException e) {
+                returnMessages.put("error - item " + (count + 1),"'" + update.getHash() + "' " + e.getMessage());
+            }
+            count ++;
+        }
+        return returnMessages;
+    }
+
+    public Map<String, String> updateProductQuantityInBatch (List<ProductUpdateQuantityBatchDto> listDto) {
+        Map<String, String> returnMessages = new HashMap<>();
+        int count = 0;
+
+        for (ProductUpdateQuantityBatchDto update : listDto) {
+            verifyHash(update.getHash(), count);
+            try {
+                UUID hash = UUID.fromString(update.getHash());
+                verifyIfProductExists(hash);
+                Product baseProduct = dao.findByHash(hash);
+                updateVerifications(baseProduct);
+
+                if(update.getOperacao().equals("adicionar")) {
+                    Double newQuantity = baseProduct.getQuantidade() + update.getValor();
+
+                    if(newQuantity < baseProduct.getQuantidade()) {
+                        throw new BaseException("operação adicionar não pode remover um valor");
+                    }
+                    dao.updateProductQuantity(hash, newQuantity);
+                    returnMessages.put("success - item " + (count + 1),"hash:'" + update.getHash() + "' " + "| quantidade adicionada");
+                }
+                else if (update.getOperacao().equals("remover")) {
+                    Double newQuantity = baseProduct.getQuantidade() - update.getValor();
+
+                    if(newQuantity > baseProduct.getQuantidade()) {
+                        throw new BaseException("operação remover não pode adicionar um valor");
+                    }
+                    dao.updateProductQuantity(hash, newQuantity);
+                    returnMessages.put("success - item " + (count + 1),"hash:'" + update.getHash() + "' " + "| quantidade removida");
                 }
             }
             catch (BaseException e) {
