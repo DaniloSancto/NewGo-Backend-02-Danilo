@@ -9,9 +9,7 @@ import dev.danilosantos.infrastructure.entities.Product;
 import dev.danilosantos.infrastructure.dao.InterfaceProductDao;
 import dev.danilosantos.infrastructure.dao.ProductDao;
 
-import java.util.Date;
-import java.util.List;
-import java.util.UUID;
+import java.util.*;
 
 public class ProductService {
     private final InterfaceProductDao dao;
@@ -121,6 +119,23 @@ public class ProductService {
 
     public List<Product> findAllQuantityLessThanMinStorageProducts() {
         return dao.findAllQuantityLowerStorageProducts();
+    }
+
+    public Map<String, String> insertProductsInBatch (List<ProductInsertDto> listDto) {
+        Map<String, String> returnMessages = new HashMap<>();
+        int count = 0;
+
+            for (ProductInsertDto productInList : listDto) {
+                try {
+                    insert(productInList);
+                    returnMessages.put("sucesso - item " + (count + 1),"'" + productInList.getNome() + "' " + "adicionado");
+                }
+                catch (BaseException e) {
+                    returnMessages.put("error - item " + (count + 1),"'" + productInList.getNome() + "' " + e.getMessage());
+                }
+                count ++;
+            }
+        return returnMessages;
     }
 
     private void verifyIfProductExists(UUID hash) {
