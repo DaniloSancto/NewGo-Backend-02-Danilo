@@ -2,6 +2,7 @@ package dev.danilosantos.application;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
+import com.google.gson.reflect.TypeToken;
 import dev.danilosantos.domain.ProductService;
 import dev.danilosantos.domain.exception.BaseException;
 import dev.danilosantos.domain.exception.JsonError;
@@ -15,6 +16,9 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.BufferedReader;
 import java.io.IOException;
+import java.lang.reflect.Type;
+import java.util.ArrayList;
+import java.util.List;
 
 @WebServlet("/products/*")
 public class ProductServlet extends HttpServlet {
@@ -38,9 +42,19 @@ public class ProductServlet extends HttpServlet {
                 while ((line = reader.readLine()) != null) {
                     json.append(line.trim());
                 }
-                ProductInsertDto productDto = gson.fromJson(json.toString(), ProductInsertDto.class);
-                service.insert(productDto);
-                response.setStatus(200);
+                if (parts.length == 3) {
+                    if (parts[2].equals("insert-batch")) {
+                        Type produtoListType = new TypeToken<ArrayList<ProductInsertDto>>() {}.getType();
+                        ArrayList<ProductInsertDto> listDto = gson.fromJson(json.toString(), produtoListType);
+                        response.getWriter().write(gson.toJson(service.insertProductsInBatch(listDto)));
+                        response.setStatus(200);
+                    }
+                }
+                else if (parts.length == 2) {
+                    ProductInsertDto productDto = gson.fromJson(json.toString(), ProductInsertDto.class);
+                    service.insert(productDto);
+                    response.setStatus(200);
+                }
             }
             else if (parts.length == 4) {
                 if(parts[3].equals("activate")) {
