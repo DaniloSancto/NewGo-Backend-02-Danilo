@@ -2,6 +2,7 @@ package dev.danilosantos.domain;
 
 import dev.danilosantos.application.dto.ProductInsertDto;
 import dev.danilosantos.application.dto.ProductUpdateDto;
+import dev.danilosantos.application.dto.ProductUpdatePriceBatchDto;
 import dev.danilosantos.domain.exception.BaseException;
 import dev.danilosantos.domain.mapper.ProductMapper;
 import dev.danilosantos.domain.strings.ExceptionMessages;
@@ -138,6 +139,48 @@ public class ProductService {
         return returnMessages;
     }
 
+    public Map<String, String> updateProductPriceInBatch (List<ProductUpdatePriceBatchDto> listDto) {
+        Map<String, String> returnMessages = new HashMap<>();
+        int count = 0;
+
+        for (ProductUpdatePriceBatchDto update : listDto) {
+            verifyHash(update.getHash(), count);
+            try {
+                UUID hash = UUID.fromString(update.getHash());
+                verifyIfProductExists(hash);
+                Product baseProduct = dao.findByHash(hash);
+                updateVerifications(baseProduct);
+
+                if(update.getOperacao().equals("aumentar")) {
+                    Double newPrice = baseProduct.getPreco() + (baseProduct.getPreco() * (update.getPorcentagem() / 100));
+
+                    if(newPrice < baseProduct.getPreco()) {
+                        throw new BaseException("operação aumentar não pode diminuir um valor");
+                    }
+                    returnMessages.put("success - item " + (count + 1),"hash:'" + update.getHash() + "' " + "| preço atualizado");
+
+                    dao.updateProductPrice(hash, newPrice);
+                }
+                else if (update.getOperacao().equals("diminuir")) {
+                    Double newPrice = baseProduct.getPreco() - (baseProduct.getPreco() * (update.getPorcentagem() / 100));
+
+                    if(newPrice > baseProduct.getPreco()) {
+                        throw new BaseException("operação diminuir não pode aumentar um valor");
+                    }
+                    returnMessages.put("success - item " + (count + 1),"hash:'" + update.getHash() + "' " + "| preço atualizado");
+
+                    dao.updateProductPrice(hash, newPrice);
+                }
+            }
+            catch (BaseException e) {
+                returnMessages.put("error - item " + (count + 1),"'" + update.getHash() + "' " + e.getMessage());
+            }
+            count ++;
+        }
+
+        return returnMessages;
+    }
+
     private void verifyIfProductExists(UUID hash) {
         if(dao.findByHash(hash) == null) {
             throw new BaseException(ExceptionMessages.PRODUCT_NOT_FIND.getMessage());
@@ -147,6 +190,12 @@ public class ProductService {
     private void verifyURI(String hashStr) {
         if(hashStr.length() != 36) {
             throw new BaseException(ExceptionMessages.INVALID_URI.getMessage());
+        }
+    }
+
+    private void verifyHash(String hashStr, int count) {
+        if(hashStr.length() != 36) {
+            throw new BaseException("Hash inválido do item: " + (count + 1) + " | operação cancelada");
         }
     }
 
