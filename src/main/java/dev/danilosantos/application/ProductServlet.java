@@ -3,6 +3,7 @@ package dev.danilosantos.application;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.reflect.TypeToken;
+import dev.danilosantos.application.dto.ProductUpdatePriceBatchDto;
 import dev.danilosantos.domain.ProductService;
 import dev.danilosantos.domain.exception.BaseException;
 import dev.danilosantos.domain.exception.JsonError;
@@ -49,7 +50,13 @@ public class ProductServlet extends HttpServlet {
                         response.getWriter().write(gson.toJson(service.insertProductsInBatch(listDto)));
                         response.setStatus(200);
                     }
-                }
+                    else if (parts[2].equals("update-price-batch")) {
+                        Type produtoListType = new TypeToken<ArrayList<ProductUpdatePriceBatchDto>>() {}.getType();
+                        ArrayList<ProductUpdatePriceBatchDto> listDto = gson.fromJson(json.toString(), produtoListType);
+                        response.getWriter().write(gson.toJson(service.updateProductPriceInBatch(listDto)));
+                        response.setStatus(200);
+                    }
+            }
                 else if (parts.length == 2) {
                     ProductInsertDto productDto = gson.fromJson(json.toString(), ProductInsertDto.class);
                     service.insert(productDto);
