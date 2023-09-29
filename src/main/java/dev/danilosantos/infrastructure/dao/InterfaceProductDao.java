@@ -34,4 +34,6 @@ public interface InterfaceProductDao {
     List<Product> findAllInactiveProducts();
 
     List<Product> findAllQuantityLowerStorageProducts();
+
+    void updateProductPrice(UUID hash, Double newPrice);
 }
