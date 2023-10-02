@@ -1,7 +1,7 @@
 package dev.danilosantos.domain.mapper;
 
 import dev.danilosantos.application.dto.ProductInsertDto;
-import dev.danilosantos.application.dto.ProductResponseInsertDto;
+import dev.danilosantos.application.dto.ProductDefaultResponseDto;
 import dev.danilosantos.application.dto.ProductUpdateDto;
 import dev.danilosantos.infrastructure.entities.Product;
 
@@ -39,8 +39,8 @@ public class ProductMapper {
                 product.getLAtivo());
     }
 
-    public ProductResponseInsertDto fromProductToResponseInsertDto(Product product) {
-        return new ProductResponseInsertDto (
+    public ProductDefaultResponseDto fromProductToDefaultResponseDto(Product product) {
+        return new ProductDefaultResponseDto(
                 product.getHash(),
                 product.getNome(),
                 product.getDescricao(),

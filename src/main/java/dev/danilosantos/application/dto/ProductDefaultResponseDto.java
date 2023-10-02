@@ -3,7 +3,7 @@ package dev.danilosantos.application.dto;
 import java.util.Date;
 import java.util.UUID;
 
-public class ProductResponseInsertDto {
+public class ProductDefaultResponseDto {
     private UUID hash;
     private String nome;
     private String descricao;
@@ -15,10 +15,10 @@ public class ProductResponseInsertDto {
     private Date dtUpdate;
     private Boolean lAtivo;
 
-    public ProductResponseInsertDto() {
+    public ProductDefaultResponseDto() {
     }
 
-    public ProductResponseInsertDto(UUID hash, String nome, String descricao, String ean13, Double preco, Double quantidade, Double estoqueMin, Date dtCreate, Date dtUpdate, Boolean lAtivo) {
+    public ProductDefaultResponseDto(UUID hash, String nome, String descricao, String ean13, Double preco, Double quantidade, Double estoqueMin, Date dtCreate, Date dtUpdate, Boolean lAtivo) {
         this.hash = hash;
         this.nome = nome;
         this.descricao = descricao;
