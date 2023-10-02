@@ -18,17 +18,17 @@ public class ProductService {
         this.dao = new ProductDao();
     }
 
-    public ProductResponseInsertDto insert(ProductInsertDto dto) {
+    public ProductDefaultResponseDto insert(ProductInsertDto dto) {
         verifyName(dto.getNome());
         verifyEan13(dto.getEan13());
 
         Product product = mapper.fromInsertDtoToProduct(dto, generateUniqueHash());
 
         verifyNumbers(product);
-        return mapper.fromProductToResponseInsertDto(dao.insert(product));
+        return mapper.fromProductToDefaultResponseDto(dao.insert(product));
     }
 
-    public void updateByHash(String hashStr, ProductUpdateDto dto) {
+    public ProductDefaultResponseDto updateByHash(String hashStr, ProductUpdateDto dto) {
         try {
             UUID hash = UUID.fromString(hashStr);
 
@@ -39,7 +39,7 @@ public class ProductService {
             verifyNumbers(product);
 
             product.setDtUpdate(new Date());
-            dao.updateByHash(hash, product);
+            return mapper.fromProductToDefaultResponseDto(dao.updateByHash(hash, product));
         }
         catch (IllegalArgumentException e) {
             throw new BaseException(e.getMessage());
