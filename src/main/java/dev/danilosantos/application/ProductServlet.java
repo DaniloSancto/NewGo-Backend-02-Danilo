@@ -18,6 +18,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.BufferedReader;
 import java.io.IOException;
+import java.io.UnsupportedEncodingException;
 import java.lang.reflect.Type;
 import java.util.ArrayList;
 
@@ -28,9 +29,7 @@ public class ProductServlet extends HttpServlet {
 
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-        response.setContentType("application/json");
-        request.setCharacterEncoding("UTF-8");
-        response.setCharacterEncoding("UTF-8");
+        baseHeader(request, response);
         try {
             BufferedReader reader = request.getReader();
 
@@ -103,9 +102,7 @@ public class ProductServlet extends HttpServlet {
 
     @Override
     protected void doPut(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-        response.setContentType("application/json");
-        request.setCharacterEncoding("UTF-8");
-        response.setCharacterEncoding("UTF-8");
+        baseHeader(request, response);
         try {
             BufferedReader reader = request.getReader();
             StringBuilder json = new StringBuilder();
@@ -130,9 +127,7 @@ public class ProductServlet extends HttpServlet {
 
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-        response.setContentType("application/json");
-        request.setCharacterEncoding("UTF-8");
-        response.setCharacterEncoding("UTF-8");
+        baseHeader(request, response);
         try {
             String requestURI = request.getRequestURI();
             String[] parts = requestURI.split("/");
@@ -178,23 +173,26 @@ public class ProductServlet extends HttpServlet {
         }
     }
 
-    // método doDelete: pega o terceiro parâmetro da URL (esperando ser um UUID) manda para camada de serviço para deletar o produto
     @Override
     protected void doDelete(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-        response.setContentType("application/json");
-        request.setCharacterEncoding("UTF-8");
-        response.setCharacterEncoding("UTF-8");
+        baseHeader(request, response);
         try {
             String requestURI = request.getRequestURI();
             String[] parts = requestURI.split("/");
             if (parts.length == 3 && "products".equals(parts[1])) {
                 String productHashStr = parts[2];
-                service.deleteByHash(productHashStr);
+                response.getWriter().write(gson.toJson(service.deleteByHash(productHashStr)));
                 response.setStatus(200);
             }
         } catch (BaseException e) {
             response.getWriter().write(gson.toJson(new JsonError(e.getMessage())));
             response.setStatus(400);
         }
+    }
+
+    private void baseHeader (HttpServletRequest request, HttpServletResponse response) throws UnsupportedEncodingException {
+        response.setContentType("application/json");
+        request.setCharacterEncoding("UTF-8");
+        response.setCharacterEncoding("UTF-8");
     }
 }
