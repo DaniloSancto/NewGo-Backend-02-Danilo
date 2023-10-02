@@ -1,9 +1,6 @@
 package dev.danilosantos.domain;
 
-import dev.danilosantos.application.dto.ProductInsertDto;
-import dev.danilosantos.application.dto.ProductUpdateDto;
-import dev.danilosantos.application.dto.ProductUpdatePriceBatchDto;
-import dev.danilosantos.application.dto.ProductUpdateQuantityBatchDto;
+import dev.danilosantos.application.dto.*;
 import dev.danilosantos.domain.exception.BaseException;
 import dev.danilosantos.domain.mapper.ProductMapper;
 import dev.danilosantos.domain.strings.ExceptionMessages;
@@ -21,14 +18,14 @@ public class ProductService {
         this.dao = new ProductDao();
     }
 
-    public void insert(ProductInsertDto dto) {
+    public ProductResponseInsertDto insert(ProductInsertDto dto) {
         verifyName(dto.getNome());
         verifyEan13(dto.getEan13());
 
         Product product = mapper.fromInsertDtoToProduct(dto, generateUniqueHash());
 
         verifyNumbers(product);
-        dao.insert(product);
+        return mapper.fromProductToResponseInsertDto(dao.insert(product));
     }
 
     public void updateByHash(String hashStr, ProductUpdateDto dto) {
