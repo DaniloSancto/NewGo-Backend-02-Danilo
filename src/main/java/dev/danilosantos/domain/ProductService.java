@@ -77,23 +77,22 @@ public class ProductService {
         }
     }
 
-    // alterar
-    public Product changeLAtivoToTrue(String hashStr) {
+    public ProductDefaultResponseDto changeLAtivoToTrue(String hashStr) {
         try {
             verifyIfProductExists(UUID.fromString(hashStr));
             dao.changeLAtivoToTrue(UUID.fromString(hashStr));
-            return dao.findByHash(UUID.fromString(hashStr));
+            return mapper.fromProductToDefaultResponseDto(dao.findByHash(UUID.fromString(hashStr)));
         }
         catch (IllegalArgumentException e) {
             throw new BaseException(e.getMessage());
         }
     }
 
-    public Product changeLAtivoToFalse(String hashStr) {
+    public ProductDefaultResponseDto changeLAtivoToFalse(String hashStr) {
         try {
             verifyIfProductExists(UUID.fromString(hashStr));
             dao.changeLAtivoToFalse(UUID.fromString(hashStr));
-            return dao.findByHash(UUID.fromString(hashStr));
+            return mapper.fromProductToDefaultResponseDto(dao.findByHash(UUID.fromString(hashStr)));
         }
         catch (IllegalArgumentException e) {
             throw new BaseException(e.getMessage());
