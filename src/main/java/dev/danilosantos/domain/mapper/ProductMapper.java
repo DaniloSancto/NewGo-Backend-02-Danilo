@@ -1,6 +1,7 @@
 package dev.danilosantos.domain.mapper;
 
 import dev.danilosantos.application.dto.ProductInsertDto;
+import dev.danilosantos.application.dto.ProductResponseInsertDto;
 import dev.danilosantos.application.dto.ProductUpdateDto;
 import dev.danilosantos.infrastructure.entities.Product;
 
@@ -33,6 +34,20 @@ public class ProductMapper {
                 verifyIfPriceAreNull(dto.getPreco(), product),
                 verifyIfQuantityAreNull(dto.getQuantidade(), product),
                 verifyIfMinStorageAreNull(dto.getEstoqueMin(), product),
+                product.getDtCreate(),
+                product.getDtUpdate(),
+                product.getLAtivo());
+    }
+
+    public ProductResponseInsertDto fromProductToResponseInsertDto(Product product) {
+        return new ProductResponseInsertDto (
+                product.getHash(),
+                product.getNome(),
+                product.getDescricao(),
+                product.getEan13(),
+                product.getPreco(),
+                product.getQuantidade(),
+                product.getEstoqueMin(),
                 product.getDtCreate(),
                 product.getDtUpdate(),
                 product.getLAtivo());
