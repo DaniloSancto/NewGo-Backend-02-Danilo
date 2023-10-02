@@ -69,8 +69,8 @@ public class ProductServlet extends HttpServlet {
             }
                 else if (parts.length == 2) {
                     ProductInsertDto productDto = gson.fromJson(json.toString(), ProductInsertDto.class);
-                    service.insert(productDto);
-                    response.setStatus(200);
+                    response.getWriter().write(gson.toJson(service.insert(productDto)));
+                    response.setStatus(201);
                 }
             }
             else if (parts.length == 4) {
