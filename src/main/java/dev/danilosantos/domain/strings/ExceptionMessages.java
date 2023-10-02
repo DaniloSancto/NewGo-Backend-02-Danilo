@@ -11,6 +11,7 @@ public enum ExceptionMessages {
     QUANTITY_CANNOT_BE_NEGATIVE("Quantidade não pode ser um valor negativo"),
     STORAGE_CANNOT_BE_NEGATIVE("EstoqueMin não pode ser um valor negativo"),
     INVALID_URI("URI inválida"),
+    PRODUCT_NOT_UPDATED("Produto não foi atualizado porque é igual ao cadastrado")
     ;
 
     private final String message;

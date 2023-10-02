@@ -37,9 +37,13 @@ public class ProductService {
 
             Product product = mapper.fromUpdateDtoToProduct(dto, baseProduct);
             verifyNumbers(product);
-
-            product.setDtUpdate(new Date());
-            return mapper.fromProductToDefaultResponseDto(dao.updateByHash(hash, product));
+            if(!product.toString().equals(baseProduct.toString())) {
+                product.setDtUpdate(new Date());
+                return mapper.fromProductToDefaultResponseDto(dao.updateByHash(hash, product));
+            }
+            else {
+                throw new BaseException(ExceptionMessages.PRODUCT_NOT_UPDATED.getMessage());
+            }
         }
         catch (IllegalArgumentException e) {
             throw new BaseException(e.getMessage());
