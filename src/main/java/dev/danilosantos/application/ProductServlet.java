@@ -20,7 +20,6 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.lang.reflect.Type;
 import java.util.ArrayList;
-import java.util.List;
 
 @WebServlet("/products/*")
 public class ProductServlet extends HttpServlet {
@@ -120,15 +119,12 @@ public class ProductServlet extends HttpServlet {
             String[] parts = requestURI.split("/");
             if (parts.length == 3 && "products".equals(parts[1])) {
                 String hashStr = parts[2];
-                service.updateByHash(hashStr, productDto);
+                response.getWriter().write(gson.toJson(service.updateByHash(hashStr, productDto)));
             }
             response.setStatus(200);
-        } catch (BaseException e) {
-            response.getWriter().write(gson.toJson(new JsonError(e.getMessage())));
-            response.setStatus(400);
         } catch (Exception e) {
             response.getWriter().write(gson.toJson(new JsonError(e.getMessage())));
-            response.setStatus(406);
+            response.setStatus(400);
         }
     }
 
