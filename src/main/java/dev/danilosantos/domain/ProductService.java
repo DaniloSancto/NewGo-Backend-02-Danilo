@@ -65,10 +65,12 @@ public class ProductService {
         }
     }
 
-    public void deleteByHash(String hashStr) {
+    public ProductDefaultResponseDto deleteByHash(String hashStr) {
         try {
             verifyIfProductExists(UUID.fromString(hashStr));
-            dao.deleteByHash(UUID.fromString(hashStr));
+            Product productDeleted = findByHash(hashStr);
+            dao.deleteByHash(productDeleted.getHash());
+            return mapper.fromProductToDefaultResponseDto(productDeleted);
         }
         catch (IllegalArgumentException e) {
             throw new BaseException(e.getMessage());
