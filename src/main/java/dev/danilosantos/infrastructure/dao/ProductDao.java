@@ -46,7 +46,7 @@ public class ProductDao implements InterfaceProductDao {
         }
     }
 
-    public void updateByHash(UUID hash, Product product) {
+    public Product updateByHash(UUID hash, Product product) {
         try {
             String sql =
                     "UPDATE produtos " +
@@ -62,12 +62,12 @@ public class ProductDao implements InterfaceProductDao {
             statement.setTimestamp(5, getTimeStampOrNull(product.getDtUpdate()));
 
             statement.executeUpdate();
-
             ResultSet resultSet = statement.getGeneratedKeys();
             resultSet.next();
 
             statement.close();
             resultSet.close();
+            return product;
         }
         catch (SQLException ex) {
             throw new RuntimeException(ex);

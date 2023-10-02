@@ -9,7 +9,7 @@ public interface InterfaceProductDao {
 
     Product insert(Product product);
 
-    void updateByHash(UUID hash, Product product);
+    Product updateByHash(UUID hash, Product product);
 
     List<Product> findAll();
 
