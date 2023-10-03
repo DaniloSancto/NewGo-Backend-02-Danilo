@@ -4,6 +4,7 @@ import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.reflect.TypeToken;
 import dev.danilosantos.application.dto.ProductUpdatePriceDto;
+import dev.danilosantos.application.dto.ProductUpdateQuantityDto;
 import dev.danilosantos.domain.ProductService;
 import dev.danilosantos.domain.exception.BaseException;
 import dev.danilosantos.domain.exception.JsonError;
@@ -60,9 +61,9 @@ public class ProductServlet extends HttpServlet {
                             break;
                         }
                         case "update-quantity-batch":
-                            //Type produtoListType = new TypeToken<ArrayList<ProductUpdateQuantityBatchDto>>() {}.getType();
-                            //ArrayList<ProductUpdateQuantityBatchDto> listDto = gson.fromJson(json.toString(), produtoListType);
-                            //response.getWriter().write(gson.toJson(service.updateProductQuantityInBatch(listDto)));
+                            Type produtoListType = new TypeToken<ArrayList<ProductUpdateQuantityDto>>() {}.getType();
+                            ArrayList<ProductUpdateQuantityDto> listDto = gson.fromJson(json.toString(), produtoListType);
+                            response.getWriter().write(gson.toJson(service.updateProductQuantityInBatch(listDto)));
                             response.setStatus(200);
                             break;
                         default:
