@@ -42,26 +42,32 @@ public class ProductServlet extends HttpServlet {
                     json.append(line.trim());
                 }
                 if (parts.length == 3) {
-                    if (parts[2].equals("insert-batch")) {
-                        Type produtoListType = new TypeToken<ArrayList<ProductInsertDto>>() {}.getType();
-                        ArrayList<ProductInsertDto> listDto = gson.fromJson(json.toString(), produtoListType);
-                        response.getWriter().write(gson.toJson(service.insertProductsInBatch(listDto)));
-                        response.setStatus(200);
-                    }
-                    else if (parts[2].equals("update-price-batch")) {
-                        Type produtoListType = new TypeToken<ArrayList<ProductUpdatePriceDto>>() {}.getType();
-                        ArrayList<ProductUpdatePriceDto> listDto = gson.fromJson(json.toString(), produtoListType);
-                        response.getWriter().write(gson.toJson(service.updateProductPriceInBatch(listDto)));
-                        response.setStatus(200);
-                    }
-                    else if (parts[2].equals("update-quantity-batch")) {
-                        //Type produtoListType = new TypeToken<ArrayList<ProductUpdateQuantityBatchDto>>() {}.getType();
-                        //ArrayList<ProductUpdateQuantityBatchDto> listDto = gson.fromJson(json.toString(), produtoListType);
-                        //response.getWriter().write(gson.toJson(service.updateProductQuantityInBatch(listDto)));
-                        response.setStatus(200);
-                    }
-                    else {
-                        response.setStatus(505);
+                    switch (parts[2]) {
+                        case "insert-batch": {
+                            Type produtoListType = new TypeToken<ArrayList<ProductInsertDto>>() {
+                            }.getType();
+                            ArrayList<ProductInsertDto> listDto = gson.fromJson(json.toString(), produtoListType);
+                            response.getWriter().write(gson.toJson(service.insertProductsInBatch(listDto)));
+                            response.setStatus(200);
+                            break;
+                        }
+                        case "update-price-batch": {
+                            Type produtoListType = new TypeToken<ArrayList<ProductUpdatePriceDto>>() {
+                            }.getType();
+                            ArrayList<ProductUpdatePriceDto> listDto = gson.fromJson(json.toString(), produtoListType);
+                            response.getWriter().write(gson.toJson(service.updateProductPriceInBatch(listDto)));
+                            response.setStatus(200);
+                            break;
+                        }
+                        case "update-quantity-batch":
+                            //Type produtoListType = new TypeToken<ArrayList<ProductUpdateQuantityBatchDto>>() {}.getType();
+                            //ArrayList<ProductUpdateQuantityBatchDto> listDto = gson.fromJson(json.toString(), produtoListType);
+                            //response.getWriter().write(gson.toJson(service.updateProductQuantityInBatch(listDto)));
+                            response.setStatus(200);
+                            break;
+                        default:
+                            response.setStatus(400);
+                            break;
                     }
             }
                 else if (parts.length == 2) {
@@ -89,13 +95,9 @@ public class ProductServlet extends HttpServlet {
                 response.setStatus(505);
             }
         }
-        catch (BaseException e) {
-            response.getWriter().write(gson.toJson(new JsonError(e.getMessage())));
-            response.setStatus(400);
-        }
         catch (Exception e) {
             response.getWriter().write(gson.toJson(new JsonError(e.getMessage())));
-            response.setStatus(406);
+            response.setStatus(400);
         }
     }
 
