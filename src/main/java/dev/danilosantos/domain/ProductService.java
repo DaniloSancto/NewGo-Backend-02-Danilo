@@ -142,47 +142,53 @@ public class ProductService {
         return returnMessages;
     }
 
-    public Map<String, String> updateProductPriceInBatch (List<ProductUpdatePriceBatchDto> listDto) {
-        Map<String, String> returnMessages = new HashMap<>();
-        int count = 0;
+    public List<Object> updateProductPriceInBatch (List<ProductUpdatePriceDto> listDto) {
+        List<Object> response = new ArrayList<>();
 
-        for (ProductUpdatePriceBatchDto update : listDto) {
-            verifyHash(update.getHash(), count);
+        for (ProductUpdatePriceDto update : listDto) {
             try {
+                verifyHash(update.getHash());
+                verifyIfProductExists(UUID.fromString(update.getHash()));
                 UUID hash = UUID.fromString(update.getHash());
-                verifyIfProductExists(hash);
                 Product baseProduct = dao.findByHash(hash);
                 updateVerifications(baseProduct);
 
-                if(update.getOperacao().equals("aumentar")) {
-                    Double newPrice = baseProduct.getPreco() + (baseProduct.getPreco() * (update.getPorcentagem() / 100));
-
-                    if(newPrice < baseProduct.getPreco()) {
-                        throw new BaseException("operação aumentar não pode diminuir um valor");
+                if(update.getOperacao().equals("valor-fixo")) {
+                    double newPrice = baseProduct.getPreco() + update.getValor();
+                    if(newPrice < 0) {
+                        throw new BaseException(ExceptionMessages.PRICE_CANNOT_BE_NEGATIVE.getMessage());
                     }
-                    returnMessages.put("success - item " + (count + 1),"hash:'" + update.getHash() + "' " + "| preço atualizado");
-
                     dao.updateProductPrice(hash, newPrice);
+                    response.add(mapper.fromProductToBatchResponseDto(dao.findByHash(hash), "success", "price updated"));
                 }
-                else if (update.getOperacao().equals("diminuir")) {
-                    Double newPrice = baseProduct.getPreco() - (baseProduct.getPreco() * (update.getPorcentagem() / 100));
-
-                    if(newPrice > baseProduct.getPreco()) {
-                        throw new BaseException("operação diminuir não pode aumentar um valor");
+                else if (update.getOperacao().equals("porcentagem")) {
+                    double newPrice = baseProduct.getPreco() + (baseProduct.getPreco() * (update.getValor() / 100));
+                    if(newPrice < 0) {
+                        throw new BaseException(ExceptionMessages.PRICE_CANNOT_BE_NEGATIVE.getMessage());
                     }
-                    returnMessages.put("success - item " + (count + 1),"hash:'" + update.getHash() + "' " + "| preço atualizado");
-
                     dao.updateProductPrice(hash, newPrice);
+                    response.add(mapper.fromProductToBatchResponseDto(dao.findByHash(hash), "success", "price updated"));
                 }
             }
             catch (BaseException e) {
-                returnMessages.put("error - item " + (count + 1),"'" + update.getHash() + "' " + e.getMessage());
+                try {
+                    Product product = dao.findByHash(UUID.fromString(update.getHash()));
+                    if(product != null) {
+                        response.add(mapper.fromProductToBatchResponseDto(product, "error", e.getMessage()));
+                    }
+                    else {
+                        response.add(new StandardErrorDto(update.getHash(), "error", e.getMessage()));
+                    }
+                }
+                catch (Exception exception) {
+                    response.add(new StandardErrorDto(update.getHash(), "error", e.getMessage()));
+                }
             }
-            count ++;
         }
-        return returnMessages;
+        return response;
     }
 
+    /*
     public Map<String, String> updateProductQuantityInBatch (List<ProductUpdateQuantityBatchDto> listDto) {
         Map<String, String> returnMessages = new HashMap<>();
         int count = 0;
@@ -222,6 +228,7 @@ public class ProductService {
 
         return returnMessages;
     }
+    */
 
     private void verifyIfProductExists(UUID hash) {
         if(dao.findByHash(hash) == null) {
@@ -235,9 +242,9 @@ public class ProductService {
         }
     }
 
-    private void verifyHash(String hashStr, int count) {
+    private void verifyHash(String hashStr) {
         if(hashStr.length() != 36) {
-            throw new BaseException("Hash inválido do item: " + (count + 1) + " | operação cancelada");
+            throw new BaseException(ExceptionMessages.INVALID_HASH.getMessage());
         }
     }
 
