@@ -14,8 +14,7 @@ public class ProductDao implements InterfaceProductDao {
     private final Connection connection = factory.getConnection();
 
     @Override
-    public void insert(Product product) {
-
+    public Product insert(Product product) {
         try {
             String sql = "INSERT INTO produtos (hash, descricao, nome, ean13, preco, quantidade, estoque_min, dtcreate, dtupdate, lativo)" +
                     "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
@@ -33,23 +32,21 @@ public class ProductDao implements InterfaceProductDao {
             preparedStatement.setBoolean(10, product.getLAtivo());
 
             preparedStatement.executeUpdate();
-
             ResultSet resultSet = preparedStatement.getGeneratedKeys();
             resultSet.next();
 
             Long generatedId = resultSet.getLong("id");
             product.setId(generatedId);
-
             preparedStatement.close();
             resultSet.close();
-
+            return product;
         }
         catch (SQLException ex) {
             throw new RuntimeException(ex);
         }
     }
 
-    public void updateByHash(UUID hash, Product product) {
+    public Product updateByHash(UUID hash, Product product) {
         try {
             String sql =
                     "UPDATE produtos " +
@@ -65,12 +62,12 @@ public class ProductDao implements InterfaceProductDao {
             statement.setTimestamp(5, getTimeStampOrNull(product.getDtUpdate()));
 
             statement.executeUpdate();
-
             ResultSet resultSet = statement.getGeneratedKeys();
             resultSet.next();
 
             statement.close();
             resultSet.close();
+            return product;
         }
         catch (SQLException ex) {
             throw new RuntimeException(ex);

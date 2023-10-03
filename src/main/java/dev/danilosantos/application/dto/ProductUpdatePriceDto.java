@@ -1,14 +1,14 @@
 package dev.danilosantos.application.dto;
 
-public class ProductUpdateQuantityBatchDto {
+public class ProductUpdatePriceDto {
     private String hash;
     private String operacao;
     private Double valor;
 
-    public ProductUpdateQuantityBatchDto() {
+    public ProductUpdatePriceDto() {
     }
 
-    public ProductUpdateQuantityBatchDto(String hash, String operacao, Double valor) {
+    public ProductUpdatePriceDto(String hash, String operacao, Double valor) {
         this.hash = hash;
         this.operacao = operacao;
         this.valor = valor;

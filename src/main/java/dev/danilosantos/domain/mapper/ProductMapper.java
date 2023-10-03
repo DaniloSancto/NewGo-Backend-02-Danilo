@@ -1,10 +1,14 @@
 package dev.danilosantos.domain.mapper;
 
+import dev.danilosantos.application.dto.ProductBatchResponseDto;
 import dev.danilosantos.application.dto.ProductInsertDto;
+import dev.danilosantos.application.dto.ProductDefaultResponseDto;
 import dev.danilosantos.application.dto.ProductUpdateDto;
 import dev.danilosantos.infrastructure.entities.Product;
 
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 import java.util.UUID;
 
 public class ProductMapper {
@@ -36,6 +40,76 @@ public class ProductMapper {
                 product.getDtCreate(),
                 product.getDtUpdate(),
                 product.getLAtivo());
+    }
+
+    public ProductDefaultResponseDto fromProductToDefaultResponseDto(Product product) {
+        return new ProductDefaultResponseDto(
+                product.getHash(),
+                product.getNome(),
+                product.getDescricao(),
+                product.getEan13(),
+                product.getPreco(),
+                product.getQuantidade(),
+                product.getEstoqueMin(),
+                product.getDtCreate(),
+                product.getDtUpdate(),
+                product.getLAtivo());
+    }
+
+    public ProductBatchResponseDto fromProductDefaultResponseDtoToBatchResponseDto(ProductDefaultResponseDto dto, String status, String message) {
+        return new ProductBatchResponseDto(
+                dto.getHash(),
+                dto.getNome(),
+                dto.getDescricao(),
+                dto.getEan13(),
+                dto.getPreco(),
+                dto.getQuantidade(),
+                dto.getEstoqueMin(),
+                dto.getDtCreate(),
+                dto.getDtUpdate(),
+                dto.getlAtivo(),
+                status,
+                message);
+    }
+
+    public ProductBatchResponseDto fromProductToBatchResponseDto(Product product, String status, String message) {
+        if(product == null) {
+            return new ProductBatchResponseDto(
+                    null,
+                    null,
+                    null,
+                    null,
+                    null,
+                    null,
+                    null,
+                    null,
+                    null,
+                    null,
+                    status,
+                    message);
+        }
+
+        return new ProductBatchResponseDto(
+                product.getHash(),
+                product.getNome(),
+                product.getDescricao(),
+                product.getEan13(),
+                product.getPreco(),
+                product.getQuantidade(),
+                product.getEstoqueMin(),
+                product.getDtCreate(),
+                product.getDtUpdate(),
+                product.getLAtivo(),
+                status,
+                message);
+    }
+
+    public List<ProductDefaultResponseDto> fromListOfProductToListOfDto(List<Product> productList) {
+        List<ProductDefaultResponseDto> dtoList = new ArrayList<>();
+        for (Product product: productList) {
+            dtoList.add(fromProductToDefaultResponseDto(product));
+        }
+        return dtoList;
     }
 
     private String verifyIfDescriptionAreNull(String description, Product product) {

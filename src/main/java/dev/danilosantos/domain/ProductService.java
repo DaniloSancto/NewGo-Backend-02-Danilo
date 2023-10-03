@@ -1,9 +1,6 @@
 package dev.danilosantos.domain;
 
-import dev.danilosantos.application.dto.ProductInsertDto;
-import dev.danilosantos.application.dto.ProductUpdateDto;
-import dev.danilosantos.application.dto.ProductUpdatePriceBatchDto;
-import dev.danilosantos.application.dto.ProductUpdateQuantityBatchDto;
+import dev.danilosantos.application.dto.*;
 import dev.danilosantos.domain.exception.BaseException;
 import dev.danilosantos.domain.mapper.ProductMapper;
 import dev.danilosantos.domain.strings.ExceptionMessages;
@@ -21,17 +18,17 @@ public class ProductService {
         this.dao = new ProductDao();
     }
 
-    public void insert(ProductInsertDto dto) {
+    public ProductDefaultResponseDto insert(ProductInsertDto dto) {
         verifyName(dto.getNome());
         verifyEan13(dto.getEan13());
 
         Product product = mapper.fromInsertDtoToProduct(dto, generateUniqueHash());
 
         verifyNumbers(product);
-        dao.insert(product);
+        return mapper.fromProductToDefaultResponseDto(dao.insert(product));
     }
 
-    public void updateByHash(String hashStr, ProductUpdateDto dto) {
+    public ProductDefaultResponseDto updateByHash(String hashStr, ProductUpdateDto dto) {
         try {
             UUID hash = UUID.fromString(hashStr);
 
@@ -40,57 +37,62 @@ public class ProductService {
 
             Product product = mapper.fromUpdateDtoToProduct(dto, baseProduct);
             verifyNumbers(product);
-
-            product.setDtUpdate(new Date());
-            dao.updateByHash(hash, product);
+            if(!product.toString().equals(baseProduct.toString())) {
+                product.setDtUpdate(new Date());
+                return mapper.fromProductToDefaultResponseDto(dao.updateByHash(hash, product));
+            }
+            else {
+                throw new BaseException(ExceptionMessages.PRODUCT_NOT_UPDATED.getMessage());
+            }
         }
         catch (IllegalArgumentException e) {
             throw new BaseException(e.getMessage());
         }
     }
 
-    public List<Product> findAll() {
-        return dao.findAll();
+    public List<ProductDefaultResponseDto> findAll() {
+        return mapper.fromListOfProductToListOfDto(dao.findAll());
     }
 
-    public Product findByHash(String hashStr) {
+    public ProductDefaultResponseDto findByHash(String hashStr) {
         try {
             verifyURI(hashStr);
             verifyIfProductExists(UUID.fromString(hashStr));
-            return dao.findByHash(UUID.fromString(hashStr));
+            return mapper.fromProductToDefaultResponseDto(dao.findByHash(UUID.fromString(hashStr)));
         }
         catch (IllegalArgumentException e) {
             throw new BaseException(e.getMessage());
         }
     }
 
-    public void deleteByHash(String hashStr) {
+    public ProductDefaultResponseDto deleteByHash(String hashStr) {
         try {
             verifyIfProductExists(UUID.fromString(hashStr));
-            dao.deleteByHash(UUID.fromString(hashStr));
+            Product productDeleted = dao.findByHash(UUID.fromString(hashStr));
+            dao.deleteByHash(productDeleted.getHash());
+            return mapper.fromProductToDefaultResponseDto(productDeleted);
         }
         catch (IllegalArgumentException e) {
             throw new BaseException(e.getMessage());
         }
     }
 
-    // alterar
-    public Product changeLAtivoToTrue(String hashStr) {
+    public ProductDefaultResponseDto changeLAtivoToTrue(String hashStr) {
         try {
             verifyIfProductExists(UUID.fromString(hashStr));
             dao.changeLAtivoToTrue(UUID.fromString(hashStr));
-            return dao.findByHash(UUID.fromString(hashStr));
+            return mapper.fromProductToDefaultResponseDto(dao.findByHash(UUID.fromString(hashStr)));
         }
         catch (IllegalArgumentException e) {
             throw new BaseException(e.getMessage());
         }
     }
 
-    public Product changeLAtivoToFalse(String hashStr) {
+    public ProductDefaultResponseDto changeLAtivoToFalse(String hashStr) {
         try {
             verifyIfProductExists(UUID.fromString(hashStr));
             dao.changeLAtivoToFalse(UUID.fromString(hashStr));
-            return dao.findByHash(UUID.fromString(hashStr));
+            return mapper.fromProductToDefaultResponseDto(dao.findByHash(UUID.fromString(hashStr)));
         }
         catch (IllegalArgumentException e) {
             throw new BaseException(e.getMessage());
@@ -110,115 +112,108 @@ public class ProductService {
         }
     }
 
-    public List<Product> findAllActiveProducts() {
-        return dao.findAllActiveProducts();
+    public List<ProductDefaultResponseDto> findAllActiveProducts() {
+        return mapper.fromListOfProductToListOfDto(dao.findAllActiveProducts());
     }
 
 
-    public List<Product> findAllInactiveProducts() {
-        return dao.findAllInactiveProducts();
+    public List<ProductDefaultResponseDto> findAllInactiveProducts() {
+        return mapper.fromListOfProductToListOfDto(dao.findAllInactiveProducts());
     }
 
-    public List<Product> findAllQuantityLessThanMinStorageProducts() {
-        return dao.findAllQuantityLowerStorageProducts();
+    public List<ProductDefaultResponseDto> findAllQuantityLessThanMinStorageProducts() {
+        return mapper.fromListOfProductToListOfDto(dao.findAllQuantityLowerStorageProducts());
     }
 
-    public Map<String, String> insertProductsInBatch (List<ProductInsertDto> listDto) {
-        Map<String, String> returnMessages = new HashMap<>();
-        int count = 0;
+    public List<Object> insertProductsInBatch (List<ProductInsertDto> listDto) {
+        List<Object> response = new ArrayList<>();
 
-            for (ProductInsertDto productInList : listDto) {
-                try {
-                    insert(productInList);
-                    returnMessages.put("sucesso - item " + (count + 1),"'" + productInList.getNome() + "' " + "adicionado");
-                }
-                catch (BaseException e) {
-                    returnMessages.put("error - item " + (count + 1),"'" + productInList.getNome() + "' " + e.getMessage());
-                }
-                count ++;
-            }
-        return returnMessages;
-    }
-
-    public Map<String, String> updateProductPriceInBatch (List<ProductUpdatePriceBatchDto> listDto) {
-        Map<String, String> returnMessages = new HashMap<>();
-        int count = 0;
-
-        for (ProductUpdatePriceBatchDto update : listDto) {
-            verifyHash(update.getHash(), count);
+        for (ProductInsertDto productInList : listDto) {
             try {
+                response.add(mapper.fromProductDefaultResponseDtoToBatchResponseDto(insert(productInList), "success", "product inserted"));
+            }
+            catch (BaseException e) {
+                response.add(new ProductInsertErrorDto(productInList.getNome(), "error", e.getMessage()));
+            }
+        }
+        return response;
+    }
+
+    public List<Object> updateProductPriceInBatch (List<ProductUpdatePriceDto> listDto) {
+        List<Object> response = new ArrayList<>();
+
+        for (ProductUpdatePriceDto update : listDto) {
+            try {
+                verifyHash(update.getHash());
+                verifyIfProductExists(UUID.fromString(update.getHash()));
                 UUID hash = UUID.fromString(update.getHash());
-                verifyIfProductExists(hash);
                 Product baseProduct = dao.findByHash(hash);
                 updateVerifications(baseProduct);
 
-                if(update.getOperacao().equals("aumentar")) {
-                    Double newPrice = baseProduct.getPreco() + (baseProduct.getPreco() * (update.getPorcentagem() / 100));
-
-                    if(newPrice < baseProduct.getPreco()) {
-                        throw new BaseException("operação aumentar não pode diminuir um valor");
+                if(update.getOperacao().equals("valor-fixo")) {
+                    double newPrice = baseProduct.getPreco() + update.getValor();
+                    if(newPrice < 0) {
+                        throw new BaseException(ExceptionMessages.PRICE_CANNOT_BE_NEGATIVE.getMessage());
                     }
-                    returnMessages.put("success - item " + (count + 1),"hash:'" + update.getHash() + "' " + "| preço atualizado");
-
                     dao.updateProductPrice(hash, newPrice);
+                    response.add(mapper.fromProductToBatchResponseDto(dao.findByHash(hash), "success", "price updated"));
                 }
-                else if (update.getOperacao().equals("diminuir")) {
-                    Double newPrice = baseProduct.getPreco() - (baseProduct.getPreco() * (update.getPorcentagem() / 100));
-
-                    if(newPrice > baseProduct.getPreco()) {
-                        throw new BaseException("operação diminuir não pode aumentar um valor");
+                else if (update.getOperacao().equals("porcentagem")) {
+                    double newPrice = baseProduct.getPreco() + (baseProduct.getPreco() * (update.getValor() / 100));
+                    if(newPrice < 0) {
+                        throw new BaseException(ExceptionMessages.PRICE_CANNOT_BE_NEGATIVE.getMessage());
                     }
-                    returnMessages.put("success - item " + (count + 1),"hash:'" + update.getHash() + "' " + "| preço atualizado");
-
                     dao.updateProductPrice(hash, newPrice);
+                    response.add(mapper.fromProductToBatchResponseDto(dao.findByHash(hash), "success", "price updated"));
                 }
             }
-            catch (BaseException e) {
-                returnMessages.put("error - item " + (count + 1),"'" + update.getHash() + "' " + e.getMessage());
+            catch (BaseException baseException) {
+                catchBaseExceptionOnUpdateBatch(baseException, UUID.fromString(update.getHash()), response);
             }
-            count ++;
         }
-        return returnMessages;
+        return response;
     }
 
-    public Map<String, String> updateProductQuantityInBatch (List<ProductUpdateQuantityBatchDto> listDto) {
-        Map<String, String> returnMessages = new HashMap<>();
-        int count = 0;
 
-        for (ProductUpdateQuantityBatchDto update : listDto) {
-            verifyHash(update.getHash(), count);
+    public List<Object> updateProductQuantityInBatch (List<ProductUpdateQuantityDto> listDto) {
+        List<Object> response = new ArrayList<>();
+        for (ProductUpdateQuantityDto update : listDto) {
+            verifyHash(update.getHash());
             try {
+                verifyHash(update.getHash());
+                verifyIfProductExists(UUID.fromString(update.getHash()));
                 UUID hash = UUID.fromString(update.getHash());
-                verifyIfProductExists(hash);
                 Product baseProduct = dao.findByHash(hash);
                 updateVerifications(baseProduct);
 
-                if(update.getOperacao().equals("adicionar")) {
-                    Double newQuantity = baseProduct.getQuantidade() + update.getValor();
-
-                    if(newQuantity < baseProduct.getQuantidade()) {
-                        throw new BaseException("operação adicionar não pode remover um valor");
-                    }
-                    dao.updateProductQuantity(hash, newQuantity);
-                    returnMessages.put("success - item " + (count + 1),"hash:'" + update.getHash() + "' " + "| quantidade adicionada");
+                double newQuantity = baseProduct.getQuantidade() + update.getValor();
+                if(newQuantity < 0) {
+                    throw new BaseException(ExceptionMessages.QUANTITY_CANNOT_BE_NEGATIVE.getMessage());
                 }
-                else if (update.getOperacao().equals("remover")) {
-                    Double newQuantity = baseProduct.getQuantidade() - update.getValor();
-
-                    if(newQuantity > baseProduct.getQuantidade()) {
-                        throw new BaseException("operação remover não pode adicionar um valor");
-                    }
-                    dao.updateProductQuantity(hash, newQuantity);
-                    returnMessages.put("success - item " + (count + 1),"hash:'" + update.getHash() + "' " + "| quantidade removida");
-                }
+                dao.updateProductQuantity(hash, newQuantity);
+                response.add(mapper.fromProductToBatchResponseDto(dao.findByHash(hash), "success", "quantity updated"));
             }
-            catch (BaseException e) {
-                returnMessages.put("error - item " + (count + 1),"'" + update.getHash() + "' " + e.getMessage());
+            catch (BaseException baseException) {
+                catchBaseExceptionOnUpdateBatch(baseException, UUID.fromString(update.getHash()), response);
             }
-            count ++;
         }
 
-        return returnMessages;
+        return response;
+    }
+
+    private void catchBaseExceptionOnUpdateBatch(BaseException baseException, UUID hash, List<Object> response) {
+        try {
+            Product product = dao.findByHash(hash);
+            if(product != null) {
+                response.add(mapper.fromProductToBatchResponseDto(product, "error", baseException.getMessage()));
+            }
+            else {
+                response.add(new ProductStandardErrorDto(hash.toString(), "error", baseException.getMessage()));
+            }
+        }
+        catch (Exception exception) {
+            response.add(new ProductStandardErrorDto(hash.toString(), "error", baseException.getMessage()));
+        }
     }
 
     private void verifyIfProductExists(UUID hash) {
@@ -233,9 +228,9 @@ public class ProductService {
         }
     }
 
-    private void verifyHash(String hashStr, int count) {
+    private void verifyHash(String hashStr) {
         if(hashStr.length() != 36) {
-            throw new BaseException("Hash inválido do item: " + (count + 1) + " | operação cancelada");
+            throw new BaseException(ExceptionMessages.INVALID_HASH.getMessage());
         }
     }
 
