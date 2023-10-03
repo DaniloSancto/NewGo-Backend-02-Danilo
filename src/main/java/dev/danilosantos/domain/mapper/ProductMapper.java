@@ -56,6 +56,22 @@ public class ProductMapper {
                 product.getLAtivo());
     }
 
+    public ProductBatchResponseDto fromProductDefaultResponseDtoToBatchResponseDto(ProductDefaultResponseDto dto, String status, String message) {
+        return new ProductBatchResponseDto(
+                dto.getHash(),
+                dto.getNome(),
+                dto.getDescricao(),
+                dto.getEan13(),
+                dto.getPreco(),
+                dto.getQuantidade(),
+                dto.getEstoqueMin(),
+                dto.getDtCreate(),
+                dto.getDtUpdate(),
+                dto.getlAtivo(),
+                status,
+                message);
+    }
+
     public ProductBatchResponseDto fromProductToBatchResponseDto(Product product, String status, String message) {
         if(product == null) {
             return new ProductBatchResponseDto(
