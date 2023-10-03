@@ -1,5 +1,6 @@
 package dev.danilosantos.domain;
 
+import com.google.gson.JsonArray;
 import dev.danilosantos.application.dto.*;
 import dev.danilosantos.domain.exception.BaseException;
 import dev.danilosantos.domain.mapper.ProductMapper;
@@ -167,65 +168,54 @@ public class ProductService {
                     response.add(mapper.fromProductToBatchResponseDto(dao.findByHash(hash), "success", "price updated"));
                 }
             }
-            catch (BaseException e) {
-                try {
-                    Product product = dao.findByHash(UUID.fromString(update.getHash()));
-                    if(product != null) {
-                        response.add(mapper.fromProductToBatchResponseDto(product, "error", e.getMessage()));
-                    }
-                    else {
-                        response.add(new ProductStandardErrorDto(update.getHash(), "error", e.getMessage()));
-                    }
-                }
-                catch (Exception exception) {
-                    response.add(new ProductStandardErrorDto(update.getHash(), "error", e.getMessage()));
-                }
+            catch (BaseException baseException) {
+                catchBaseExceptionOnUpdateBatch(baseException, UUID.fromString(update.getHash()), response);
             }
         }
         return response;
     }
 
-    /*
-    public Map<String, String> updateProductQuantityInBatch (List<ProductUpdateQuantityBatchDto> listDto) {
-        Map<String, String> returnMessages = new HashMap<>();
-        int count = 0;
 
-        for (ProductUpdateQuantityBatchDto update : listDto) {
-            verifyHash(update.getHash(), count);
+    public List<Object> updateProductQuantityInBatch (List<ProductUpdateQuantityDto> listDto) {
+        List<Object> response = new ArrayList<>();
+        for (ProductUpdateQuantityDto update : listDto) {
+            verifyHash(update.getHash());
             try {
+                verifyHash(update.getHash());
+                verifyIfProductExists(UUID.fromString(update.getHash()));
                 UUID hash = UUID.fromString(update.getHash());
-                verifyIfProductExists(hash);
                 Product baseProduct = dao.findByHash(hash);
                 updateVerifications(baseProduct);
 
-                if(update.getOperacao().equals("adicionar")) {
-                    Double newQuantity = baseProduct.getQuantidade() + update.getValor();
-
-                    if(newQuantity < baseProduct.getQuantidade()) {
-                        throw new BaseException("operação adicionar não pode remover um valor");
-                    }
-                    dao.updateProductQuantity(hash, newQuantity);
-                    returnMessages.put("success - item " + (count + 1),"hash:'" + update.getHash() + "' " + "| quantidade adicionada");
+                double newQuantity = baseProduct.getQuantidade() + update.getValor();
+                if(newQuantity < 0) {
+                    throw new BaseException(ExceptionMessages.QUANTITY_CANNOT_BE_NEGATIVE.getMessage());
                 }
-                else if (update.getOperacao().equals("remover")) {
-                    Double newQuantity = baseProduct.getQuantidade() - update.getValor();
-
-                    if(newQuantity > baseProduct.getQuantidade()) {
-                        throw new BaseException("operação remover não pode adicionar um valor");
-                    }
-                    dao.updateProductQuantity(hash, newQuantity);
-                    returnMessages.put("success - item " + (count + 1),"hash:'" + update.getHash() + "' " + "| quantidade removida");
-                }
+                dao.updateProductQuantity(hash, newQuantity);
+                response.add(mapper.fromProductToBatchResponseDto(dao.findByHash(hash), "success", "quantity updated"));
             }
-            catch (BaseException e) {
-                returnMessages.put("error - item " + (count + 1),"'" + update.getHash() + "' " + e.getMessage());
+            catch (BaseException baseException) {
+                catchBaseExceptionOnUpdateBatch(baseException, UUID.fromString(update.getHash()), response);
             }
-            count ++;
         }
 
-        return returnMessages;
+        return response;
     }
-    */
+
+    private void catchBaseExceptionOnUpdateBatch(BaseException baseException, UUID hash, List<Object> response) {
+        try {
+            Product product = dao.findByHash(hash);
+            if(product != null) {
+                response.add(mapper.fromProductToBatchResponseDto(product, "error", baseException.getMessage()));
+            }
+            else {
+                response.add(new ProductStandardErrorDto(hash.toString(), "error", baseException.getMessage()));
+            }
+        }
+        catch (Exception exception) {
+            response.add(new ProductStandardErrorDto(hash.toString(), "error", baseException.getMessage()));
+        }
+    }
 
     private void verifyIfProductExists(UUID hash) {
         if(dao.findByHash(hash) == null) {
