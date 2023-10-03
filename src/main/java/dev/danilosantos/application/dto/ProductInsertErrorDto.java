@@ -1,18 +1,18 @@
 package dev.danilosantos.application.dto;
 
-public class StandardErrorDto {
-    private String hash;
+public class ProductInsertErrorDto {
+    private String name;
     private String status;
     private String message;
 
-    public StandardErrorDto(String hash, String status, String message) {
-        this.hash = hash;
+    public ProductInsertErrorDto(String name, String status, String message) {
+        this.name = name;
         this.status = status;
         this.message = message;
     }
 
-    public String getHash() {
-        return hash;
+    public String getName() {
+        return name;
     }
 
     public String getStatus() {
