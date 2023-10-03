@@ -1,6 +1,5 @@
 package dev.danilosantos.domain;
 
-import com.google.gson.JsonArray;
 import dev.danilosantos.application.dto.*;
 import dev.danilosantos.domain.exception.BaseException;
 import dev.danilosantos.domain.mapper.ProductMapper;
