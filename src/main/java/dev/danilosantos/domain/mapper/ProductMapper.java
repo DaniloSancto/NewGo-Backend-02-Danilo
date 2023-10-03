@@ -1,5 +1,6 @@
 package dev.danilosantos.domain.mapper;
 
+import dev.danilosantos.application.dto.ProductBatchResponseDto;
 import dev.danilosantos.application.dto.ProductInsertDto;
 import dev.danilosantos.application.dto.ProductDefaultResponseDto;
 import dev.danilosantos.application.dto.ProductUpdateDto;
@@ -53,6 +54,38 @@ public class ProductMapper {
                 product.getDtCreate(),
                 product.getDtUpdate(),
                 product.getLAtivo());
+    }
+
+    public ProductBatchResponseDto fromProductToBatchResponseDto(Product product, String status, String message) {
+        if(product == null) {
+            return new ProductBatchResponseDto(
+                    null,
+                    null,
+                    null,
+                    null,
+                    null,
+                    null,
+                    null,
+                    null,
+                    null,
+                    null,
+                    status,
+                    message);
+        }
+
+        return new ProductBatchResponseDto(
+                product.getHash(),
+                product.getNome(),
+                product.getDescricao(),
+                product.getEan13(),
+                product.getPreco(),
+                product.getQuantidade(),
+                product.getEstoqueMin(),
+                product.getDtCreate(),
+                product.getDtUpdate(),
+                product.getLAtivo(),
+                status,
+                message);
     }
 
     public List<ProductDefaultResponseDto> fromListOfProductToListOfDto(List<Product> productList) {
