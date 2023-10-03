@@ -5,7 +5,9 @@ import dev.danilosantos.application.dto.ProductDefaultResponseDto;
 import dev.danilosantos.application.dto.ProductUpdateDto;
 import dev.danilosantos.infrastructure.entities.Product;
 
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 import java.util.UUID;
 
 public class ProductMapper {
@@ -51,6 +53,14 @@ public class ProductMapper {
                 product.getDtCreate(),
                 product.getDtUpdate(),
                 product.getLAtivo());
+    }
+
+    public List<ProductDefaultResponseDto> fromListOfProductToListOfDto(List<Product> productList) {
+        List<ProductDefaultResponseDto> dtoList = new ArrayList<>();
+        for (Product product: productList) {
+            dtoList.add(fromProductToDefaultResponseDto(product));
+        }
+        return dtoList;
     }
 
     private String verifyIfDescriptionAreNull(String description, Product product) {
