@@ -50,15 +50,15 @@ public class ProductService {
         }
     }
 
-    public List<Product> findAll() {
-        return dao.findAll();
+    public List<ProductDefaultResponseDto> findAll() {
+        return mapper.fromListOfProductToListOfDto(dao.findAll());
     }
 
-    public Product findByHash(String hashStr) {
+    public ProductDefaultResponseDto findByHash(String hashStr) {
         try {
             verifyURI(hashStr);
             verifyIfProductExists(UUID.fromString(hashStr));
-            return dao.findByHash(UUID.fromString(hashStr));
+            return mapper.fromProductToDefaultResponseDto(dao.findByHash(UUID.fromString(hashStr)));
         }
         catch (IllegalArgumentException e) {
             throw new BaseException(e.getMessage());
@@ -68,7 +68,7 @@ public class ProductService {
     public ProductDefaultResponseDto deleteByHash(String hashStr) {
         try {
             verifyIfProductExists(UUID.fromString(hashStr));
-            Product productDeleted = findByHash(hashStr);
+            Product productDeleted = dao.findByHash(UUID.fromString(hashStr));
             dao.deleteByHash(productDeleted.getHash());
             return mapper.fromProductToDefaultResponseDto(productDeleted);
         }
@@ -112,17 +112,17 @@ public class ProductService {
         }
     }
 
-    public List<Product> findAllActiveProducts() {
-        return dao.findAllActiveProducts();
+    public List<ProductDefaultResponseDto> findAllActiveProducts() {
+        return mapper.fromListOfProductToListOfDto(dao.findAllActiveProducts());
     }
 
 
-    public List<Product> findAllInactiveProducts() {
-        return dao.findAllInactiveProducts();
+    public List<ProductDefaultResponseDto> findAllInactiveProducts() {
+        return mapper.fromListOfProductToListOfDto(dao.findAllInactiveProducts());
     }
 
-    public List<Product> findAllQuantityLessThanMinStorageProducts() {
-        return dao.findAllQuantityLowerStorageProducts();
+    public List<ProductDefaultResponseDto> findAllQuantityLessThanMinStorageProducts() {
+        return mapper.fromListOfProductToListOfDto(dao.findAllQuantityLowerStorageProducts());
     }
 
     public Map<String, String> insertProductsInBatch (List<ProductInsertDto> listDto) {
