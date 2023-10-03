@@ -125,21 +125,18 @@ public class ProductService {
         return mapper.fromListOfProductToListOfDto(dao.findAllQuantityLowerStorageProducts());
     }
 
-    public Map<String, String> insertProductsInBatch (List<ProductInsertDto> listDto) {
-        Map<String, String> returnMessages = new HashMap<>();
-        int count = 0;
+    public List<Object> insertProductsInBatch (List<ProductInsertDto> listDto) {
+        List<Object> response = new ArrayList<>();
 
-            for (ProductInsertDto productInList : listDto) {
-                try {
-                    insert(productInList);
-                    returnMessages.put("sucesso - item " + (count + 1),"'" + productInList.getNome() + "' " + "adicionado");
-                }
-                catch (BaseException e) {
-                    returnMessages.put("error - item " + (count + 1),"'" + productInList.getNome() + "' " + e.getMessage());
-                }
-                count ++;
+        for (ProductInsertDto productInList : listDto) {
+            try {
+                response.add(mapper.fromProductDefaultResponseDtoToBatchResponseDto(insert(productInList), "success", "product inserted"));
             }
-        return returnMessages;
+            catch (BaseException e) {
+                response.add(new ProductInsertErrorDto(productInList.getNome(), "error", e.getMessage()));
+            }
+        }
+        return response;
     }
 
     public List<Object> updateProductPriceInBatch (List<ProductUpdatePriceDto> listDto) {
@@ -177,11 +174,11 @@ public class ProductService {
                         response.add(mapper.fromProductToBatchResponseDto(product, "error", e.getMessage()));
                     }
                     else {
-                        response.add(new StandardErrorDto(update.getHash(), "error", e.getMessage()));
+                        response.add(new ProductStandardErrorDto(update.getHash(), "error", e.getMessage()));
                     }
                 }
                 catch (Exception exception) {
-                    response.add(new StandardErrorDto(update.getHash(), "error", e.getMessage()));
+                    response.add(new ProductStandardErrorDto(update.getHash(), "error", e.getMessage()));
                 }
             }
         }
