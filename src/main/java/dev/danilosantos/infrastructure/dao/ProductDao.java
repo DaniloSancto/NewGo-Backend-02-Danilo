@@ -213,35 +213,16 @@ public class ProductDao implements InterfaceProductDao {
         }
     }
 
-    public void updateProductPrice (UUID hash, Double newPrice) {
+    public void updateProductValue (UUID hash, Double value, String field) {
         try {
             String sql =
                     "UPDATE produtos " +
-                    "SET preco = ?, dtupdate = ?" +
+                    "SET " + field + " = ?, dtupdate = ?" +
                     "WHERE hash = ?;";
 
             PreparedStatement statement = connection.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS);
             statement.setObject(3, hash, java.sql.Types.OTHER);
-            statement.setDouble(1, newPrice);
-            statement.setTimestamp(2, getTimeStampOrNull(new Date()));
-
-            statement.executeUpdate();
-            statement.close();
-        }
-        catch (SQLException ex) {
-            throw new RuntimeException(ex);
-        }
-    }
-    public void updateProductQuantity (UUID hash, Double newQuantity) {
-        try {
-            String sql =
-                    "UPDATE produtos " +
-                            "SET quantidade = ?, dtupdate = ?" +
-                            "WHERE hash = ?;";
-
-            PreparedStatement statement = connection.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS);
-            statement.setObject(3, hash, java.sql.Types.OTHER);
-            statement.setDouble(1, newQuantity);
+            statement.setDouble(1, value);
             statement.setTimestamp(2, getTimeStampOrNull(new Date()));
 
             statement.executeUpdate();
