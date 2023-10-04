@@ -128,14 +128,6 @@ public class ProductDao implements InterfaceProductDao {
         }
     }
 
-    public void changeLAtivoToTrue(UUID hash) {
-        updateLAtivoOnDb(hash, true);
-    }
-
-    public void changeLAtivoToFalse(UUID hash) {
-        updateLAtivoOnDb(hash, false);
-    }
-
     public Product findActiveProduct(UUID param) {
         return getOneProductFromDb(param, "WHERE hash = ? AND lativo = true");
     }
@@ -260,16 +252,17 @@ public class ProductDao implements InterfaceProductDao {
         }
     }
 
-    private void updateLAtivoOnDb(UUID hash, boolean condition) {
+    public void updateLAtivoOnDb(UUID hash, boolean condition) {
         try {
             String sql =
                     "UPDATE produtos " +
-                    "SET lativo = ?" +
+                    "SET lativo = ?, dtupdate = ?" +
                     "WHERE hash = ?;";
 
             PreparedStatement statement = connection.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS);
-            statement.setObject(2, hash, java.sql.Types.OTHER);
+            statement.setObject(3, hash, java.sql.Types.OTHER);
             statement.setBoolean(1, condition);
+            statement.setTimestamp(2, getTimeStampOrNull(new Date()));
 
             statement.executeUpdate();
             statement.close();

@@ -23,9 +23,7 @@ public interface InterfaceProductDao {
 
     UUID findHash(UUID param);
 
-    void changeLAtivoToTrue(UUID hash);
-
-    void changeLAtivoToFalse(UUID hash);
+    void updateLAtivoOnDb(UUID hash, boolean condition);
 
     List<Product> findAllActiveProducts();
 
