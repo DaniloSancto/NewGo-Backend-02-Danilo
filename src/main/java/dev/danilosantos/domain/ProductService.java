@@ -77,26 +77,15 @@ public class ProductService {
         }
     }
 
-    public ProductDefaultResponseDto changeLAtivoToTrue(String hashStr) {
-        try {
-            verifyIfProductExists(UUID.fromString(hashStr));
-            dao.changeLAtivoToTrue(UUID.fromString(hashStr));
-            return mapper.fromProductToDefaultResponseDto(dao.findByHash(UUID.fromString(hashStr)));
+    public ProductDefaultResponseDto changeLAtivo(String hashStr, boolean condition) {
+        verifyHash(hashStr);
+        UUID hash = UUID.fromString(hashStr);
+        verifyIfProductExists(hash);
+        Product product = dao.findByHash(hash);
+        if(condition != product.getLAtivo()) {
+            dao.updateLAtivoOnDb(hash, condition);
         }
-        catch (IllegalArgumentException e) {
-            throw new BaseException(e.getMessage());
-        }
-    }
-
-    public ProductDefaultResponseDto changeLAtivoToFalse(String hashStr) {
-        try {
-            verifyIfProductExists(UUID.fromString(hashStr));
-            dao.changeLAtivoToFalse(UUID.fromString(hashStr));
-            return mapper.fromProductToDefaultResponseDto(dao.findByHash(UUID.fromString(hashStr)));
-        }
-        catch (IllegalArgumentException e) {
-            throw new BaseException(e.getMessage());
-        }
+        return mapper.fromProductToDefaultResponseDto(dao.findByHash(UUID.fromString(hashStr)));
     }
 
     public Product findActiveProduct(String hashStr) {
