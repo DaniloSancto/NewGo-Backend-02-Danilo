@@ -130,6 +130,7 @@ public class ProductService {
 
     public List<Object> updateProductPriceInBatch (List<ProductUpdatePriceDto> listDto) {
         List<Object> response = new ArrayList<>();
+        String field = "preco";
 
         for (ProductUpdatePriceDto update : listDto) {
             try {
@@ -144,7 +145,7 @@ public class ProductService {
                     if(newPrice < 0) {
                         throw new BaseException(ExceptionMessages.PRICE_CANNOT_BE_NEGATIVE.getMessage());
                     }
-                    dao.updateProductPrice(hash, newPrice);
+                    dao.updateProductValue(hash, newPrice, field);
                     response.add(mapper.fromProductToBatchResponseDto(dao.findByHash(hash), "success", "price updated"));
                 }
                 else if (update.getOperacao().equals("porcentagem")) {
@@ -152,7 +153,7 @@ public class ProductService {
                     if(newPrice < 0) {
                         throw new BaseException(ExceptionMessages.PRICE_CANNOT_BE_NEGATIVE.getMessage());
                     }
-                    dao.updateProductPrice(hash, newPrice);
+                    dao.updateProductValue(hash, newPrice, field);
                     response.add(mapper.fromProductToBatchResponseDto(dao.findByHash(hash), "success", "price updated"));
                 }
             }
@@ -166,6 +167,8 @@ public class ProductService {
 
     public List<Object> updateProductQuantityInBatch (List<ProductUpdateQuantityDto> listDto) {
         List<Object> response = new ArrayList<>();
+        String field = "quantidade";
+
         for (ProductUpdateQuantityDto update : listDto) {
             verifyHash(update.getHash());
             try {
@@ -179,7 +182,7 @@ public class ProductService {
                 if(newQuantity < 0) {
                     throw new BaseException(ExceptionMessages.QUANTITY_CANNOT_BE_NEGATIVE.getMessage());
                 }
-                dao.updateProductQuantity(hash, newQuantity);
+                dao.updateProductValue(hash, newQuantity, field);
                 response.add(mapper.fromProductToBatchResponseDto(dao.findByHash(hash), "success", "quantity updated"));
             }
             catch (BaseException baseException) {
