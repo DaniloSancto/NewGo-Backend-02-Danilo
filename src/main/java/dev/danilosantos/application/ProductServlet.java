@@ -70,7 +70,7 @@ public class ProductServlet extends HttpServlet {
                             response.setStatus(400);
                             break;
                     }
-            }
+                }
                 else if (parts.length == 2) {
                     ProductInsertDto productDto = gson.fromJson(json.toString(), ProductInsertDto.class);
                     response.getWriter().write(gson.toJson(service.insert(productDto)));
@@ -80,20 +80,14 @@ public class ProductServlet extends HttpServlet {
             else if (parts.length == 4) {
                 if(parts[3].equals("activate")) {
                     String productHashStr = parts[2];
-                    response.getWriter().write(gson.toJson(service.changeLAtivoToTrue(productHashStr)));
+                    response.getWriter().write(gson.toJson(service.changeLAtivo(productHashStr, true)));
                     response.setStatus(200);
                 }
                 else if (parts[3].equals("deactivate")) {
                     String productHashStr = parts[2];
-                    response.getWriter().write(gson.toJson(service.changeLAtivoToFalse(productHashStr)));
+                    response.getWriter().write(gson.toJson(service.changeLAtivo(productHashStr, false)));
                     response.setStatus(200);
                 }
-                else {
-                    response.setStatus(505);
-                }
-            }
-            else {
-                response.setStatus(505);
             }
         }
         catch (Exception e) {
