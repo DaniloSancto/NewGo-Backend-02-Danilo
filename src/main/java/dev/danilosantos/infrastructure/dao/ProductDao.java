@@ -157,20 +157,8 @@ public class ProductDao implements InterfaceProductDao {
             ResultSet rs = statement.executeQuery();
 
             if (rs.next()) {
-            product = new Product(
-                    rs.getLong("id"),
-                    UUID.fromString(rs.getString("hash")),
-                    rs.getString("nome"),
-                    rs.getString("descricao"),
-                    rs.getString("ean13"),
-                    rs.getDouble("preco"),
-                    rs.getDouble("quantidade"),
-                    rs.getDouble("estoque_min"),
-                    rs.getTimestamp("dtcreate"),
-                    rs.getTimestamp("dtupdate"),
-                    rs.getBoolean("lativo")
-            );
-        }
+                product = instantiateNewProduct(rs);
+            }
         statement.close();
         rs.close();
         return product;
@@ -189,20 +177,7 @@ public class ProductDao implements InterfaceProductDao {
 
             List<Product> list = new ArrayList<>();
             while (rs.next()) {
-                Product product = new Product(
-                        rs.getLong("id"),
-                        UUID.fromString(rs.getString("hash")),
-                        rs.getString("nome"),
-                        rs.getString("descricao"),
-                        rs.getString("ean13"),
-                        rs.getDouble("preco"),
-                        rs.getDouble("quantidade"),
-                        rs.getDouble("estoque_min"),
-                        rs.getTimestamp("dtcreate"),
-                        rs.getTimestamp("dtupdate"),
-                        rs.getBoolean("lativo")
-                );
-                list.add(product);
+                list.add(instantiateNewProduct(rs));
             }
             statement.close();
             rs.close();
@@ -251,6 +226,22 @@ public class ProductDao implements InterfaceProductDao {
         catch (SQLException ex) {
             throw new RuntimeException(ex);
         }
+    }
+
+    private Product instantiateNewProduct(ResultSet rs) throws SQLException {
+        return new Product(
+                rs.getLong("id"),
+                UUID.fromString(rs.getString("hash")),
+                rs.getString("nome"),
+                rs.getString("descricao"),
+                rs.getString("ean13"),
+                rs.getDouble("preco"),
+                rs.getDouble("quantidade"),
+                rs.getDouble("estoque_min"),
+                rs.getTimestamp("dtcreate"),
+                rs.getTimestamp("dtupdate"),
+                rs.getBoolean("lativo")
+        );
     }
 
     private Timestamp getTimeStampOrNull(Date date) {
