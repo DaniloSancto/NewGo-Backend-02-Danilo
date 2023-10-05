@@ -170,7 +170,6 @@ public class ProductService {
         String field = "quantidade";
 
         for (ProductUpdateQuantityDto update : listDto) {
-            verifyHash(update.getHash());
             try {
                 verifyHash(update.getHash());
                 verifyIfProductExists(UUID.fromString(update.getHash()));
@@ -189,7 +188,6 @@ public class ProductService {
                 catchBaseExceptionOnUpdateBatch(baseException, UUID.fromString(update.getHash()), response);
             }
         }
-
         return response;
     }
 
