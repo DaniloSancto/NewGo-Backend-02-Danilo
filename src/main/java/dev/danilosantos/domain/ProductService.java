@@ -77,26 +77,15 @@ public class ProductService {
         }
     }
 
-    public ProductDefaultResponseDto changeLAtivoToTrue(String hashStr) {
-        try {
-            verifyIfProductExists(UUID.fromString(hashStr));
-            dao.changeLAtivoToTrue(UUID.fromString(hashStr));
-            return mapper.fromProductToDefaultResponseDto(dao.findByHash(UUID.fromString(hashStr)));
+    public ProductDefaultResponseDto changeLAtivo(String hashStr, boolean condition) {
+        verifyHash(hashStr);
+        UUID hash = UUID.fromString(hashStr);
+        verifyIfProductExists(hash);
+        Product product = dao.findByHash(hash);
+        if(condition != product.getLAtivo()) {
+            dao.updateLAtivoOnDb(hash, condition);
         }
-        catch (IllegalArgumentException e) {
-            throw new BaseException(e.getMessage());
-        }
-    }
-
-    public ProductDefaultResponseDto changeLAtivoToFalse(String hashStr) {
-        try {
-            verifyIfProductExists(UUID.fromString(hashStr));
-            dao.changeLAtivoToFalse(UUID.fromString(hashStr));
-            return mapper.fromProductToDefaultResponseDto(dao.findByHash(UUID.fromString(hashStr)));
-        }
-        catch (IllegalArgumentException e) {
-            throw new BaseException(e.getMessage());
-        }
+        return mapper.fromProductToDefaultResponseDto(dao.findByHash(UUID.fromString(hashStr)));
     }
 
     public Product findActiveProduct(String hashStr) {
@@ -141,6 +130,7 @@ public class ProductService {
 
     public List<Object> updateProductPriceInBatch (List<ProductUpdatePriceDto> listDto) {
         List<Object> response = new ArrayList<>();
+        String field = "preco";
 
         for (ProductUpdatePriceDto update : listDto) {
             try {
@@ -155,7 +145,7 @@ public class ProductService {
                     if(newPrice < 0) {
                         throw new BaseException(ExceptionMessages.PRICE_CANNOT_BE_NEGATIVE.getMessage());
                     }
-                    dao.updateProductPrice(hash, newPrice);
+                    dao.updateProductValue(hash, newPrice, field);
                     response.add(mapper.fromProductToBatchResponseDto(dao.findByHash(hash), "success", "price updated"));
                 }
                 else if (update.getOperacao().equals("porcentagem")) {
@@ -163,7 +153,7 @@ public class ProductService {
                     if(newPrice < 0) {
                         throw new BaseException(ExceptionMessages.PRICE_CANNOT_BE_NEGATIVE.getMessage());
                     }
-                    dao.updateProductPrice(hash, newPrice);
+                    dao.updateProductValue(hash, newPrice, field);
                     response.add(mapper.fromProductToBatchResponseDto(dao.findByHash(hash), "success", "price updated"));
                 }
             }
@@ -177,8 +167,9 @@ public class ProductService {
 
     public List<Object> updateProductQuantityInBatch (List<ProductUpdateQuantityDto> listDto) {
         List<Object> response = new ArrayList<>();
+        String field = "quantidade";
+
         for (ProductUpdateQuantityDto update : listDto) {
-            verifyHash(update.getHash());
             try {
                 verifyHash(update.getHash());
                 verifyIfProductExists(UUID.fromString(update.getHash()));
@@ -190,14 +181,13 @@ public class ProductService {
                 if(newQuantity < 0) {
                     throw new BaseException(ExceptionMessages.QUANTITY_CANNOT_BE_NEGATIVE.getMessage());
                 }
-                dao.updateProductQuantity(hash, newQuantity);
+                dao.updateProductValue(hash, newQuantity, field);
                 response.add(mapper.fromProductToBatchResponseDto(dao.findByHash(hash), "success", "quantity updated"));
             }
             catch (BaseException baseException) {
                 catchBaseExceptionOnUpdateBatch(baseException, UUID.fromString(update.getHash()), response);
             }
         }
-
         return response;
     }
 

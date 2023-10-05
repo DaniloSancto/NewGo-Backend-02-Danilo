@@ -128,14 +128,6 @@ public class ProductDao implements InterfaceProductDao {
         }
     }
 
-    public void changeLAtivoToTrue(UUID hash) {
-        updateLAtivoOnDb(hash, true);
-    }
-
-    public void changeLAtivoToFalse(UUID hash) {
-        updateLAtivoOnDb(hash, false);
-    }
-
     public Product findActiveProduct(UUID param) {
         return getOneProductFromDb(param, "WHERE hash = ? AND lativo = true");
     }
@@ -165,20 +157,8 @@ public class ProductDao implements InterfaceProductDao {
             ResultSet rs = statement.executeQuery();
 
             if (rs.next()) {
-            product = new Product(
-                    rs.getLong("id"),
-                    UUID.fromString(rs.getString("hash")),
-                    rs.getString("nome"),
-                    rs.getString("descricao"),
-                    rs.getString("ean13"),
-                    rs.getDouble("preco"),
-                    rs.getDouble("quantidade"),
-                    rs.getDouble("estoque_min"),
-                    rs.getTimestamp("dtcreate"),
-                    rs.getTimestamp("dtupdate"),
-                    rs.getBoolean("lativo")
-            );
-        }
+                product = instantiateNewProduct(rs);
+            }
         statement.close();
         rs.close();
         return product;
@@ -197,20 +177,7 @@ public class ProductDao implements InterfaceProductDao {
 
             List<Product> list = new ArrayList<>();
             while (rs.next()) {
-                Product product = new Product(
-                        rs.getLong("id"),
-                        UUID.fromString(rs.getString("hash")),
-                        rs.getString("nome"),
-                        rs.getString("descricao"),
-                        rs.getString("ean13"),
-                        rs.getDouble("preco"),
-                        rs.getDouble("quantidade"),
-                        rs.getDouble("estoque_min"),
-                        rs.getTimestamp("dtcreate"),
-                        rs.getTimestamp("dtupdate"),
-                        rs.getBoolean("lativo")
-                );
-                list.add(product);
+                list.add(instantiateNewProduct(rs));
             }
             statement.close();
             rs.close();
@@ -221,35 +188,16 @@ public class ProductDao implements InterfaceProductDao {
         }
     }
 
-    public void updateProductPrice (UUID hash, Double newPrice) {
+    public void updateProductValue (UUID hash, Double value, String field) {
         try {
             String sql =
                     "UPDATE produtos " +
-                    "SET preco = ?, dtupdate = ?" +
+                    "SET " + field + " = ?, dtupdate = ?" +
                     "WHERE hash = ?;";
 
             PreparedStatement statement = connection.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS);
             statement.setObject(3, hash, java.sql.Types.OTHER);
-            statement.setDouble(1, newPrice);
-            statement.setTimestamp(2, getTimeStampOrNull(new Date()));
-
-            statement.executeUpdate();
-            statement.close();
-        }
-        catch (SQLException ex) {
-            throw new RuntimeException(ex);
-        }
-    }
-    public void updateProductQuantity (UUID hash, Double newQuantity) {
-        try {
-            String sql =
-                    "UPDATE produtos " +
-                            "SET quantidade = ?, dtupdate = ?" +
-                            "WHERE hash = ?;";
-
-            PreparedStatement statement = connection.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS);
-            statement.setObject(3, hash, java.sql.Types.OTHER);
-            statement.setDouble(1, newQuantity);
+            statement.setDouble(1, value);
             statement.setTimestamp(2, getTimeStampOrNull(new Date()));
 
             statement.executeUpdate();
@@ -260,16 +208,17 @@ public class ProductDao implements InterfaceProductDao {
         }
     }
 
-    private void updateLAtivoOnDb(UUID hash, boolean condition) {
+    public void updateLAtivoOnDb(UUID hash, boolean condition) {
         try {
             String sql =
                     "UPDATE produtos " +
-                    "SET lativo = ?" +
+                    "SET lativo = ?, dtupdate = ?" +
                     "WHERE hash = ?;";
 
             PreparedStatement statement = connection.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS);
-            statement.setObject(2, hash, java.sql.Types.OTHER);
+            statement.setObject(3, hash, java.sql.Types.OTHER);
             statement.setBoolean(1, condition);
+            statement.setTimestamp(2, getTimeStampOrNull(new Date()));
 
             statement.executeUpdate();
             statement.close();
@@ -277,6 +226,22 @@ public class ProductDao implements InterfaceProductDao {
         catch (SQLException ex) {
             throw new RuntimeException(ex);
         }
+    }
+
+    private Product instantiateNewProduct(ResultSet rs) throws SQLException {
+        return new Product(
+                rs.getLong("id"),
+                UUID.fromString(rs.getString("hash")),
+                rs.getString("nome"),
+                rs.getString("descricao"),
+                rs.getString("ean13"),
+                rs.getDouble("preco"),
+                rs.getDouble("quantidade"),
+                rs.getDouble("estoque_min"),
+                rs.getTimestamp("dtcreate"),
+                rs.getTimestamp("dtupdate"),
+                rs.getBoolean("lativo")
+        );
     }
 
     private Timestamp getTimeStampOrNull(Date date) {

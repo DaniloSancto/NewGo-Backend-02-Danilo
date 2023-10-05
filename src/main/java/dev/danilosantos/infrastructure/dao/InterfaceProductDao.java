@@ -23,9 +23,7 @@ public interface InterfaceProductDao {
 
     UUID findHash(UUID param);
 
-    void changeLAtivoToTrue(UUID hash);
-
-    void changeLAtivoToFalse(UUID hash);
+    void updateLAtivoOnDb(UUID hash, boolean condition);
 
     List<Product> findAllActiveProducts();
 
@@ -35,7 +33,5 @@ public interface InterfaceProductDao {
 
     List<Product> findAllQuantityLowerStorageProducts();
 
-    void updateProductPrice(UUID hash, Double newPrice);
-
-    void updateProductQuantity(UUID hash, Double newPrice);
+    void updateProductValue (UUID hash, Double value, String field);
 }
