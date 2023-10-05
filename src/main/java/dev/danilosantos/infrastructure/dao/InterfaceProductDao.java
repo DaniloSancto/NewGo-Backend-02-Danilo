@@ -7,15 +7,15 @@ import java.util.UUID;
 
 public interface InterfaceProductDao {
 
-    void insert(Product product);
+    Product insert(Product product);
 
-    void updateByHash(UUID hash, Product product);
+    Product updateByHash(UUID hash, Product product);
 
     List<Product> findAll();
 
     Product findByHash(UUID hash);
 
-    boolean deleteByHash(UUID hash);
+    void deleteByHash(UUID hash);
 
     Product findByName(String param);
 
@@ -23,5 +23,15 @@ public interface InterfaceProductDao {
 
     UUID findHash(UUID param);
 
-    void changeToActiveByHash(UUID hash);
+    void updateLAtivoOnDb(UUID hash, boolean condition);
+
+    List<Product> findAllActiveProducts();
+
+    Product findActiveProduct(UUID param);
+
+    List<Product> findAllInactiveProducts();
+
+    List<Product> findAllQuantityLowerStorageProducts();
+
+    void updateProductValue (UUID hash, Double value, String field);
 }
